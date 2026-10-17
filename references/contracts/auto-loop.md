@@ -20,6 +20,16 @@
 
 ## 2. 验收项：完成必须有证据
 
+先确定本次的**里程碑**，再选验收项。不要每次都套用整套七项：
+
+| 里程碑 | 适用场景 | criteria |
+|---|---|---|
+| 问题诊断 `diagnosis` | 问题是否真实、失败在哪里还不清楚 | question、code（有仓库时）、literature、decision |
+| 研究方案 `proposal` | 要一个可实现、经过审查的方案 | 全部七项；没有仓库时去掉 code |
+| 判别结果 `probe_result` | 已授权运行判别实验 | question、counterexamples、test_plan、decision；test_plan 必须引用 completed 且有 outputs 的 activity（后端只核对"非 failed"，这一点靠 Agent 自觉） |
+
+有效的负结论也可以完成里程碑：决定项可以是 park 或 kill，不强制 pursue。
+
 | criterion | 达标条件（`workflow_check` 会机械核对） | 负责技能 |
 |---|---|---|
 | question | 引用当前版本的 project | workflow / diagnose |
@@ -28,9 +38,14 @@
 | counterexamples | focus 候选的当前版本：每个 claim 都有 finding；所有 contradicted/contested 都已 disposition | research-review（GRILL），必要时 research-evolve |
 | test_plan | 一个 activity，其 inputs 包含 focus 当前版本，且不是 failed | research-test |
 | card | 一份在 focus 当前版本之后写入的 Card material | research-report |
-| decision | 针对 focus 当前版本或当前 project 的 pursue/refine 决定 | research-decide |
+| decision | 针对 focus 当前版本或当前 project 当前版本的决定（pursue/refine/park/kill 均可） | research-decide |
 
-只有 `workflow_check` 返回 ready，status=done 才能写入；否则后端拒绝。H 一旦修订，依赖它的 test_plan、card、decision、counterexamples 会自动失效，需要局部重做；question、literature、code 不受影响。这是结构检查，不判断科学真假：引用的记录本身必须是真实读过、真实运行过的东西。
+只有 `workflow_check` 返回 ready，status=done 才能写入；否则后端拒绝。几条规则要记住：
+
+- 被引用的记录如果出了新版本（例如 finding 被撤回、activity 变成 failed），旧引用不再算数。
+- 当前 focus 候选的**任何版本**上出现过的 contradicted/contested finding，都要等它最近的一条 disposition 解除才算处理完：adopted、superseded，或附带输出证据的 rejected。把 finding 改写成 unknown，或者升级 H，都不能抹掉这笔账。
+- 目标、验收项、预算、授权和禁止项属于**运行合同**。修改它们必须在 `user_input` 中引用一条之后写入的 human feedback；Agent 不能自行放宽。
+- H 一旦修订，依赖它的 test_plan、card、decision、counterexamples 需要局部重做。literature、code 的材料可以复用，但如果 H 改变了信号或前提，要重新确认它们仍然支持新用途。这是结构检查，不判断科学真假：引用的记录本身必须是真实读过、真实运行过的东西。
 
 另一种合法结局是**有依据的停止**：写一个附带 material 证据的 kill/park 决定，再把 workflow 设为 stopped，stop_reason=`evidence_based_stop`。例如问题已被前人解决、目标在现有数据上不可识别、价值不足。这和"做不下去"不同。
 
@@ -41,13 +56,18 @@
 ```
 
 1. **观察。** 读最新的 workflow 和 `workflow_check`，只按需读取相关记录。`records_context` 只在启动、恢复和每次总览时读全量。
-2. **选缺口。** 优先处理会改变下一决定的 open_issue（回退信号见第 4 节）；没有时，按下面的顺序补第一个未达标的验收项：
+2. **选动作。** 不按验收项顺序机械补齐，按以下优先级：
+   1. 用户的新指令，或仍在运行的执行任务；
+   2. 推翻当前路线的有效反证或测量故障（见第 4 节）；
+   3. 承重前提里最影响决策的那个不确定性；
+   4. 达成里程碑还缺的内容；
+   5. 表达整理。
 
-   `question → literature ∥ code → 确定 focus → counterexamples → test_plan → card → decision`
+   每步写一句理由，格式是"如果这项检查得到 A 或 B，下一步分别怎么变"。廉价、已授权的探测可以早于完整成卡；否定结果可以结束错误分支，不必为凑出一个正向方案硬造新方法。
 
    还没有 focus 时，走 ABDUCE：先 research-diagnose，再 research-ideate 或 research-construct，产出一个 candidate，并把它设为 focus。
 3. **查重。** 为动作起一个键：`<技能>:<对象@版本>:<意图>`，例如 `retrieve:h@2:alias-search`。如果历史检查点里已有同一个键，就不要重做；确有新理由时加 `#2` 并在 summary 写明原因。后端会拒绝重复的键。
-4. **执行。** 按共同合同的六项交接调用一个专项技能。每个技能**第一次**用到时，通过宿主的技能机制加载它（Claude Code 用 Skill 工具调用 `open-scientist:research-…`，Codex 用 `$research-…`），按其中的方法执行；同一技能再次使用时可以沿用已加载的内容。不要凭印象代替专项方法。宿主工具负责实际检索、读代码和运行获授权的探测；不能越过 authorized / forbidden。
+4. **执行。** 按共同合同的六项交接调用一个专项技能。只要当前执行上下文里没有这个技能，就要加载：首次使用、会话恢复、上下文压缩之后、新开的子 Agent，都算"没有"。例如第一次用到时，通过宿主的技能机制加载它（Claude Code 用 Skill 工具调用 `open-scientist:research-…`，Codex 用 `$research-…`），按其中的方法执行；同一技能再次使用时可以沿用已加载的内容。不要凭印象代替专项方法。宿主工具负责实际检索、读代码和运行获授权的探测；不能越过 authorized / forbidden。
 5. **先写研究记录**（material、finding、candidate、activity、decision），**再写检查点**：
    - actions_used +1
    - last_action：键、技能、问题、outcome（advanced / no_change / failed / needs_user）、summary、outputs
@@ -58,7 +78,7 @@
 |---|---|
 | `workflow_check` ready | 收尾（第 7 节）→ status=done |
 | actions_used 达到 max_actions | stopped，stop_reason=budget；summary 写出下一步本该做什么 |
-| 连续两次 outcome 为 no_change/failed，且没有新增记录 | stopped，stop_reason=no_progress；写明缺的是哪种信息或资源 |
+| 最近的动作没有改变事实覆盖、候选间的区分、风险判断、可执行性或交付完整度（反复记录同样的未知不算进展），换一条证据路线后仍然如此 | stopped，stop_reason=no_progress；说明在当前授权内，合理的替代路线为什么都不足以继续 |
 | 需要越权的资源或访问 | stopped，stop_reason=blocked；或 waiting_user，请求授权 |
 | 需要用户做实质方向选择（第 6 节） | waiting_user，附选项与推荐 |
 | 证据表明应停 | 写 kill/park 决定 → stopped，stop_reason=evidence_based_stop |
@@ -91,7 +111,13 @@ PPT 的三个视角：
 | 对手审查 | 这条解释最容易在哪里失败？最强的竞争解释是什么？ |
 | 对抗攻击 | 对幸存的主张，能否构造合法反例或找到击穿它的观察？ |
 
-- 宿主支持子 Agent 时（Claude Code 中是插件自带的 `research-grill` agent），每个视角起一个独立上下文，只交审查包，不交作者的推理过程。
+- 三个视角**按问题选用**，不是每次都派齐三个：
+  - 贡献依赖"没人做过"，或者跨领域的来源不清 → 召回；
+  - 同样的观察可能来自另一种机制 → 对手审查；
+  - 存在承重的全称主张，或者可以构造可执行的反例 → 对抗攻击。
+
+  简单的引文核对不需要独立审查。
+- 宿主支持子 Agent 时（Claude Code 中是插件自带的 `research-grill` agent），每个选用的视角起一个独立上下文。审查包里要包含：方法的完整定义和推导、原始反证、约束条件、相关方法文件的绝对路径（`references/methods/critique.md`、`grounding.md`、`falsification_reaudit.md` 等），以及本地论文检索的可用方式。隐藏旧分数和推荐结论，但不要删掉方法成立所需的推导。
 - 不支持时，顺序自查，并在 finding 的 rationale 里注明"自查"。
 - 汇总时保留分歧，逐条标出证据，不按票数判真。每个 claim 写一条 finding；有效的反例走 research-evolve 或 diagnose。
 - 只有分歧真的影响下一步投入时，才给用户选项（补测 / 换条件 / 收尾）。
@@ -102,7 +128,9 @@ PPT 的三个视角：
 - 动用 forbidden 中的资源，或授权之外的资源：训练、付费、长时间 GPU、改动共享代码。
 - 两个方向在证据上并存，而选择取决于用户的偏好或资源。
 
-问的时候给 2–4 个选项、推荐项、各自代价，写入 `question_for_user`。用户回答后，先写 feedback 和 disposition，再把 status 改回 active。
+判断原则是"这个决定归谁、是否已有授权"。普通的数据缺口和科学分歧，由 Agent 先去查证或设计判别检查，不因为存在分歧就问人。
+
+问的时候给 2–4 个选项、推荐项、各自代价，写入 `question_for_user`。用户回答后，先把回答写成 human feedback，再在新的检查点里通过 `user_input` 引用它，把 status 改回 active；没有这条回答，后端拒绝恢复。只是打开项目、读取记录，不算用户授权继续。
 
 ## 7. 总览与收尾
 
@@ -118,7 +146,14 @@ PPT 的三个视角：
 4. 从 next_action 继续；历史里已有的动作键不重复执行。
 5. 用户改变了预算或授权：写一个新的检查点版本，在 open_issues 记下原因。
 
-## 9. 检查点示例
+## 9. 已知限制
+
+- 检查点在动作**执行之后**才写入。如果动作执行完、检查点还没写就中断了，恢复时看不到这个动作，可能重复执行。只读检索重复无妨；训练、付费、外部提交这类动作，恢复时要先核对实际产物或作业，不能盲目重放。
+- MCP 不拦截 Bash。时间、成本、GPU 的硬上限要靠宿主的超时、权限设置或 runner；协议里的预算只是记账，不是强制执行。
+- 验收是结构检查：只核对记录的类型、版本和链接是否成立。后端不区分一条 material 是代码、论文还是笔记，所以证据是否真实、是否相关，要靠审查和宿主轨迹来判断。
+- human feedback 由 Agent 代为写入，`source=human` 只是一项记录声明，不是不可伪造的授权。
+
+## 10. 检查点示例
 
 ```json
 {"goal": "经文献、代码与反例检查的研究方案", "project": {"id": "q", "version": 2},

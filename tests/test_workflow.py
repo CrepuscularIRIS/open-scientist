@@ -16,6 +16,7 @@ def start(s, criteria=None, max_actions=10, record_id="run"):
         "goal": "Deliver a literature-, code- and counterexample-checked research plan",
         "project": REF("q"), "criteria": criteria or FULL, "max_actions": max_actions,
         "actions_used": 0, "status": "active", "stage": "frame",
+        "authorized": ["search", "read code"], "forbidden": ["training", "paid API"],
         "next_action": {"skill": "research-diagnose", "question": "Is the miss real?", "why": "Q unverified"},
     }, 0)
 
@@ -96,8 +97,10 @@ def test_status_specific_fields_are_required(tmp_path):
         s.put("workflow", "run", {**run["payload"], "status": "stopped", "summary": "x"}, 1)
     waiting = s.put("workflow", "run", {**run["payload"], "status": "waiting_user",
                                         "question_for_user": "Change the target metric?"}, 1)
+    s.put("assessment", "answer", {"type": "feedback", "subject": REF("run", 2), "source": "human",
+                                   "text": "Keep the target metric"}, 0)
     resumed = s.put("workflow", "run", {**waiting["payload"], "status": "active",
-                                        "question_for_user": None}, 2)
+                                        "question_for_user": None, "user_input": REF("answer")}, 2)
     assert resumed["version"] == 3
 
 
@@ -153,8 +156,11 @@ def test_unresolved_contrary_finding_blocks_until_dispositioned(tmp_path):
                                  "judgment": "contradicted", "evidence": [REF("cx")],
                                  "rationale": "Legal episode loses a frame", "scope": "Episodes > 500 steps"}, 0)
     assert s.check_workflow("run")["criteria"]["counterexamples"]["pass"] is False
+    s.put("material", "rerun", {"source": "probe rerun", "content": "Frame 17 present with full buffer",
+                                "locator": "runs/probe/out2.json"}, 0)
     s.put("assessment", "disp", {"type": "disposition", "subject": REF("f-cx"), "outcome": "rejected",
-                                 "rationale": "Probe used a truncated buffer config; rerun shows frame present"}, 0)
+                                 "rationale": "Probe used a truncated buffer config; rerun shows frame present",
+                                 "outputs": [REF("rerun")]}, 0)
     assert s.check_workflow("run")["criteria"]["counterexamples"]["pass"] is True
 
 
@@ -178,3 +184,103 @@ def test_evidence_keys_must_be_declared_criteria(tmp_path):
     run = start(s, criteria=["question", "literature"])
     with pytest.raises(ValueError, match="criteria"):
         s.put("workflow", "run", {**run["payload"], "evidence": {"card": [REF("q")]}}, 1)
+
+
+# --- 0.2.1 fixes for the audit's reproduced bypasses -------------------------
+
+def human(s, record_id, subject, text):
+    return s.put("assessment", record_id, {"type": "feedback", "subject": subject,
+                                           "source": "human", "text": text}, 0)
+
+
+def ready_run(s):
+    base(s)
+    start(s)
+    evidence = research_plan_records(s)
+    return s.put("workflow", "run", {**s.get("run")["payload"], "focus": REF("h"), "evidence": evidence}, 1)
+
+
+def test_contract_cannot_be_weakened_without_human_input(tmp_path):
+    s = Store(str(tmp_path))
+    base(s)
+    run = start(s)
+    for change in ({"criteria": ["question"]}, {"max_actions": 500}, {"forbidden": []},
+                   {"authorized": ["paid API"]}):
+        with pytest.raises(ValueError, match="contract"):
+            s.put("workflow", "run", {**run["payload"], **change}, 1)
+    fb = human(s, "fb-budget", REF("run"), "Raise the budget to 30 actions")
+    raised = s.put("workflow", "run", {**run["payload"], "max_actions": 30,
+                                       "user_input": REF(fb["id"])}, 1)
+    assert raised["payload"]["max_actions"] == 30
+
+
+def test_stale_or_withdrawn_evidence_does_not_pass(tmp_path):
+    s = Store(str(tmp_path))
+    run = ready_run(s)
+    assert s.check_workflow("run")["ready"] is True
+    s.put("project", "q", {"question": "Revised question"}, 1)
+    s.put("workflow", "run", {**run["payload"], "project": REF("q", 2)}, run["version"])
+    assert s.check_workflow("run")["criteria"]["question"]["pass"] is False  # evidence still cites q@1
+
+
+def test_withdrawn_literature_finding_and_failed_test_fail(tmp_path):
+    s = Store(str(tmp_path))
+    ready_run(s)
+    s.put("assessment", "f-c2", {"type": "finding", "subject": REF("h"), "claim": "c2", "judgment": "unknown",
+                                 "evidence": [], "rationale": "Source misread", "scope": "Withdrawn"}, 1)
+    s.put("activity", "t1", {"objective": "Separate storage from retrieval failure", "status": "failed",
+                             "plan": "Replay 50 episodes; oracle query vs learned query", "inputs": [REF("h")],
+                             "failure": "Replay harness crashed"}, 1)
+    report = s.check_workflow("run")
+    assert report["criteria"]["literature"]["pass"] is False
+    assert report["criteria"]["test_plan"]["pass"] is False
+
+
+def test_contrary_history_cannot_be_erased_by_revision(tmp_path):
+    s = Store(str(tmp_path))
+    ready_run(s)
+    s.put("material", "cx", {"source": "probe", "content": "Frame lost", "locator": "out.json"}, 0)
+    s.put("assessment", "f-cx", {"type": "finding", "subject": REF("h"), "claim": "c1", "judgment": "contradicted",
+                                 "evidence": [REF("cx")], "rationale": "Legal case", "scope": "L>500"}, 0)
+    s.put("assessment", "f-cx", {"type": "finding", "subject": REF("h"), "claim": "c1", "judgment": "unknown",
+                                 "evidence": [], "rationale": "Softened", "scope": "L>500"}, 1)
+    assert s.check_workflow("run")["criteria"]["counterexamples"]["pass"] is False
+    # A bare rejection without supporting output does not clear it either.
+    s.put("assessment", "d-bare", {"type": "disposition", "subject": REF("f-cx"), "outcome": "rejected",
+                                   "rationale": "We think it is fine"}, 0)
+    assert s.check_workflow("run")["criteria"]["counterexamples"]["pass"] is False
+    s.put("material", "rerun", {"source": "probe rerun", "content": "Frame present with full buffer",
+                                "locator": "out2.json"}, 0)
+    s.put("assessment", "d-ok", {"type": "disposition", "subject": REF("f-cx"), "outcome": "rejected",
+                                 "rationale": "Truncated buffer config", "outputs": [REF("rerun")]}, 0)
+    assert s.check_workflow("run")["criteria"]["counterexamples"]["pass"] is True
+    s.put("assessment", "d-later", {"type": "disposition", "subject": REF("f-cx"), "outcome": "deferred",
+                                    "rationale": "Reopened after review"}, 0)
+    assert s.check_workflow("run")["criteria"]["counterexamples"]["pass"] is False
+
+
+def test_stop_decision_must_match_current_version(tmp_path):
+    s = Store(str(tmp_path))
+    run = ready_run(s)
+    s.put("assessment", "kill-h1", {"type": "decision", "subject": REF("h"), "decision": "kill",
+                                    "rationale": "Old mechanism subsumed", "evidence": [REF("paper")]}, 0)
+    s.put("candidate", "h", {"problem": REF("q"), "mechanism": "Different mechanism",
+                             "claims": {"c1": "x"}}, 1)
+    run = s.put("workflow", "run", {**run["payload"], "focus": REF("h", 2)}, run["version"])
+    with pytest.raises(ValueError, match="kill or park"):
+        s.put("workflow", "run", {**run["payload"], "status": "stopped", "stop_reason": "evidence_based_stop",
+                                  "summary": "stop", "next_action": None}, run["version"])
+
+
+def test_waiting_user_resumes_only_with_a_new_human_answer(tmp_path):
+    s = Store(str(tmp_path))
+    base(s)
+    run = start(s)
+    waiting = s.put("workflow", "run", {**run["payload"], "status": "waiting_user",
+                                        "question_for_user": "Optimize latency or success rate?"}, 1)
+    resume = {**waiting["payload"], "status": "active"}
+    resume.pop("question_for_user")
+    with pytest.raises(ValueError, match="human"):
+        s.put("workflow", "run", resume, 2)
+    fb = human(s, "fb-answer", REF("run", 2), "Success rate")
+    assert s.put("workflow", "run", {**resume, "user_input": REF(fb["id"])}, 2)["version"] == 3

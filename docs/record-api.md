@@ -41,7 +41,7 @@ lists default to empty. Text fields must contain non-whitespace characters.
 | `material` | `source: string`, `content: string` | `locator: string`, `scope: string` |
 | `activity` | `objective: string`, `status: plan/running/completed/failed`, `plan: string`, `inputs: Ref[]` | `outputs: Ref[]`, `result: string`, `failure: string`, `change_note: string` |
 | `assessment` | See the four variants below | — |
-| `workflow` | `goal`, `project: Ref`, `criteria[]`, `max_actions`, `actions_used`, `status`, `stage` | `focus: Ref`, `evidence: {criterion: Ref[]}`, `authorized[]`, `forbidden[]`, `last_action`, `open_issues[]`, `next_action`, `question_for_user`, `stop_reason`, `summary` |
+| `workflow` | `goal`, `project: Ref`, `criteria[]`, `max_actions`, `actions_used`, `status`, `stage` | `focus: Ref`, `evidence: {criterion: Ref[]}`, `authorized[]`, `forbidden[]`, `last_action`, `open_issues[]`, `next_action`, `question_for_user`, `stop_reason`, `summary`, `user_input: Ref` |
 
 Material records contain sources and observations, not a global `supports` flag.
 The caller supplies the actual source content/locator; recording is not source
@@ -104,15 +104,19 @@ fact. Protocol: [auto-loop](../references/contracts/auto-loop.md).
   An action `key` (e.g. `retrieve:h@2:alias-search`) that appears in an earlier checkpoint
   is rejected; a deliberate retry needs a new key such as `...#2`.
 - `done` is accepted only when `workflow_check` is ready. `evidence_based_stop` needs a
-  kill/park decision with material evidence on the workflow's project or focus.
+  kill/park decision with material evidence on the current version of the project or focus.
+- Run contract (`goal`, `criteria`, `max_actions`, `authorized`, `forbidden`) changes and
+  leaving `waiting_user` require `user_input` citing a `source=human` feedback written after
+  the previous checkpoint. This is a recorded declaration, not unforgeable authorization.
 
-`workflow_check` criteria: `question` cites the current project version; `literature`
-cites a finding with material evidence; `code` cites material with a `locator`;
-`counterexamples` needs a finding for every claim of the current focus version and a
-resolving disposition for each contradicted/contested one; `test_plan` cites a non-failed
+`workflow_check` only counts cited records that are still their latest version. Criteria:
+`question` cites the exact current project version; `literature` cites a finding with material evidence; `code` cites material with a `locator`;
+`counterexamples` needs a finding for every claim of the current focus version, and every
+contradicted/contested finding ever recorded on any version of the focus candidate must have
+its most recent disposition resolve it (adopted, superseded, or rejected with output evidence); `test_plan` cites a non-failed
 activity whose inputs include the current focus; `card` cites material written after the
-current focus version; `decision` cites a latest pursue/refine decision on the current focus
-or project. Revising the focus candidate invalidates the focus-dependent criteria. The check
+current focus version; `decision` cites a decision (any outcome) on the current focus or
+project version. Revising the focus candidate invalidates the focus-dependent criteria. The check
 is structural: it confirms linkage and currency, not scientific correctness.
 
 ## CLI fallback

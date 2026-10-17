@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "open-scientist",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Evidence-grounded research: literature and code, problem discovery, mechanism construction, testing, review and decisions.",
   "license": "MIT AND Apache-2.0",
   "keywords": ["research", "science", "local-papers", "arxiv", "evidence"],

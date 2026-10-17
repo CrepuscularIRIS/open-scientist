@@ -21,6 +21,7 @@ Stage = Literal["frame", "ground", "abduce", "probe", "grill", "report"]
 Status = Literal["active", "waiting_user", "paused", "done", "stopped"]
 StopReason = Literal["evidence_based_stop", "no_progress", "budget", "blocked", "user_abort"]
 TERMINAL = {"done", "stopped"}
+CONTRACT = ("goal", "criteria", "max_actions", "authorized", "forbidden")
 # Idempotency key, e.g. "retrieve:q@2:alias-search#2"; '@' and '#' tag versions and retries.
 ACTION_KEY = r"^[A-Za-z0-9][A-Za-z0-9_.:@#/-]{0,199}$"
 CONTRARY = {"contradicted", "contested"}
@@ -61,6 +62,7 @@ class Workflow(StrictModel):
     question_for_user: Text | None = None
     stop_reason: StopReason | None = None
     summary: Text | None = None
+    user_input: Ref | None = None  # human feedback that authorizes a contract change or a resume
 
     @model_validator(mode="after")
     def status_fields_are_consistent(self):
@@ -90,6 +92,8 @@ def workflow_references(payload: dict):
     for refs in payload.get("evidence", {}).values():
         yield from refs
     yield from payload.get("last_action", {}).get("outputs", [])
+    if "user_input" in payload:
+        yield payload["user_input"]
 
 
 class _Snapshot:
@@ -119,7 +123,9 @@ def _label(ref: dict) -> str:
 
 
 def _refs(payload: dict, criterion: str, snap: _Snapshot) -> list[dict]:
-    return [r for r in (snap.get(ref) for ref in payload.get("evidence", {}).get(criterion, [])) if r]
+    """Cited records that are still their latest version; a superseded citation no longer counts."""
+    return [snap.get(ref) for ref in payload.get("evidence", {}).get(criterion, [])
+            if snap.get(ref) and snap.is_latest(ref)]
 
 
 def _focus(payload: dict, snap: _Snapshot) -> tuple[dict | None, str]:
@@ -136,7 +142,8 @@ def _question(payload, snap, focus):
     project = payload["project"]
     if not snap.is_latest(project):
         return False, f"project {_label(project)} changed; re-point the workflow to the latest question"
-    ok = any(r["kind"] == "project" and r["id"] == project["id"] for r in _refs(payload, "question", snap))
+    ok = any(r["kind"] == "project" and r["id"] == project["id"] and r["version"] == project["version"]
+             for r in _refs(payload, "question", snap))
     return ok, "question pinned" if ok else "cite the current project record"
 
 
@@ -159,12 +166,21 @@ def _counterexamples(payload, snap, focus):
     missing = sorted(set(focus["payload"]["claims"]) - {r["payload"]["claim"] for r in findings})
     if missing:
         return False, f"claims without a finding on {_label(ref)}: {', '.join(missing)}"
-    resolved = {(d["payload"]["subject"]["id"], d["payload"]["subject"]["version"])
-                for d in snap.latest_of("assessment", "disposition") if d["payload"]["outcome"] in RESOLVED}
-    open_contrary = [r["id"] for r in findings
-                     if r["payload"]["judgment"] in CONTRARY and (r["id"], r["version"]) not in resolved]
+    # Every contrary finding ever recorded on any version of this candidate stays open until its most
+    # recent disposition resolves it; softening the finding or revising H does not erase it.
+    newest = {}
+    for d in sorted(snap.latest_of("assessment", "disposition"), key=lambda d: d["created_at"]):
+        newest[(d["payload"]["subject"]["id"], d["payload"]["subject"]["version"])] = d["payload"]
+    def resolved(key):
+        d = newest.get(key)
+        return bool(d) and (d["outcome"] in {"adopted", "superseded"}
+                            or (d["outcome"] == "rejected" and d.get("outputs")))
+    contrary = {(r["id"], r["version"]) for r in snap.exact.values()
+                if r["kind"] == "assessment" and r["payload"]["type"] == "finding"
+                and r["payload"]["subject"]["id"] == focus["id"] and r["payload"]["judgment"] in CONTRARY}
+    open_contrary = sorted(f"{i}@{v}" for i, v in contrary if not resolved((i, v)))
     if open_contrary:
-        return False, f"undisposed contrary findings: {', '.join(sorted(open_contrary))}"
+        return False, f"contrary findings without a resolving disposition (a rejection needs output evidence): {', '.join(open_contrary)}"
     return True, f"every claim of {_label(ref)} assessed; contrary findings disposed"
 
 
@@ -186,10 +202,9 @@ def _card(payload, snap, focus):
 
 def _decision(payload, snap, focus):
     targets = [payload["project"]] + ([{"id": focus["id"], "version": focus["version"]}] if focus else [])
-    ok = any(r["kind"] == "assessment" and r["payload"]["type"] == "decision" and snap.is_latest(r)
-             and r["payload"]["decision"] in {"pursue", "refine"} and r["payload"]["subject"] in targets
+    ok = any(r["kind"] == "assessment" and r["payload"]["type"] == "decision" and r["payload"]["subject"] in targets
              for r in _refs(payload, "decision", snap))
-    return ok, "pursue/refine decision on current focus" if ok else "cite a pursue/refine decision on the current focus"
+    return ok, "decision on current focus/project" if ok else "cite a decision on the current focus or project version"
 
 
 CHECKS = {"question": _question, "literature": _literature, "code": _code, "counterexamples": _counterexamples,
@@ -210,8 +225,9 @@ def check(payload: dict, records: list[dict]) -> dict:
                       "it does not judge whether the science is right."}
 
 
-def validate_transition(old: dict | None, new: dict, history: list[dict], records: list[dict]) -> None:
+def validate_transition(old_record: dict | None, new: dict, history: list[dict], records: list[dict]) -> None:
     snap = _Snapshot(records)
+    old = old_record["payload"] if old_record else None
     if snap.get(new["project"])["kind"] != "project":
         raise ValueError("workflow project must reference a project record")
     if "focus" in new and snap.get(new["focus"])["kind"] != "candidate":
@@ -219,16 +235,28 @@ def validate_transition(old: dict | None, new: dict, history: list[dict], record
     if old and old["status"] in TERMINAL:
         raise ValueError("workflow is terminal; start a new workflow ID to continue")
     _validate_action_count(old, new, history)
+    if old and any(old.get(k) != new.get(k) for k in CONTRACT):
+        _require_human_input(old_record, new, snap, "changing the run contract (goal/criteria/budget/authorization)")
+    if old and old["status"] == "waiting_user" and new["status"] != "waiting_user":
+        _require_human_input(old_record, new, snap, "leaving waiting_user")
     if new["status"] == "done":
         report = check(new, records)
         if not report["ready"]:
             failed = [f"{k}: {v['detail']}" for k, v in report["criteria"].items() if not v["pass"]]
             raise ValueError("workflow not ready for done; " + "; ".join(failed))
     if new.get("stop_reason") == "evidence_based_stop":
-        anchors = {new["project"]["id"]} | ({new["focus"]["id"]} if "focus" in new else set())
+        anchors = [ref for ref in (new["project"], new.get("focus")) if ref and snap.is_latest(ref)]
         if not any(r["payload"]["decision"] in {"kill", "park"} and r["payload"].get("evidence")
-                   and r["payload"]["subject"]["id"] in anchors for r in snap.latest_of("assessment", "decision")):
+                   and r["payload"]["subject"] in anchors for r in snap.latest_of("assessment", "decision")):
             raise ValueError("evidence_based_stop requires a kill or park decision with material evidence")
+
+
+def _require_human_input(old_record: dict, new: dict, snap: _Snapshot, why: str) -> None:
+    ref = new.get("user_input")
+    fb = snap.get(ref) if ref else None
+    if not (fb and fb["kind"] == "assessment" and fb["payload"]["type"] == "feedback"
+            and fb["payload"]["source"] == "human" and fb["created_at"] > old_record["created_at"]):
+        raise ValueError(f"{why} requires user_input citing a human feedback record written after the previous checkpoint")
 
 
 def _validate_action_count(old: dict | None, new: dict, history: list[dict]) -> None:

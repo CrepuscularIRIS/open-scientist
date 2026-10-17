@@ -208,7 +208,7 @@ class Store:
             if kind == "workflow":
                 everything = [self._record(row) for row in conn.execute("SELECT * FROM records")]
                 history = [r for r in everything if r["id"] == record_id]
-                workflow.validate_transition(current["payload"] if current else None, payload, history, everything)
+                workflow.validate_transition(current, payload, history, everything)
             result = {"id": record_id, "version": actual + 1, "kind": kind,
                       "created_at": datetime.now(timezone.utc).isoformat(), "payload": payload}
             conn.execute("INSERT INTO records VALUES (?,?,?,?,?)", (

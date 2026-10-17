@@ -14,7 +14,7 @@
 
 ## [已核] 自动化与真实接口
 
-最终完整命令 `python -m pytest -q`：**71 passed，9 subtests passed**（含 Claude Code 适配 5 项、自动模式 9 项）。
+最终完整命令 `python -m pytest -q`：**77 passed，9 subtests passed**（含 Claude Code 适配 5 项、自动模式 15 项）。
 
 覆盖实际SQLite读写、精确历史引用、并发版本冲突、非法关联/状态拒绝、历史反证/材料与未消费反馈保留、CLI跨目录访问、SDK stdio MCP initialize/list_tools/call_tool、真实临时FTS数据库、arXiv Atom解析与失败分类、来源去重、资产篡改/遗漏/漂移、包内链接检查和合成桥接演示。
 
@@ -39,7 +39,9 @@ Codex实际 `plugin/read` 识别到 **11项带open-scientist命名空间的skill
 
 新增 `workflow` 记录类型和 `workflow_check` 工具（第 6 个 MCP 工具）。后端只机械保证四件事：每个检查点最多一个动作；动作键不能重复；用量不超过预算；验收项全部通过才允许写 done，有依据的停止必须附带有证据的 kill/park 决定。循环本身由宿主 Agent 按 [auto-loop](../references/contracts/auto-loop.md) 执行。`tests/test_workflow.py` 覆盖了这些约束，包括 H 修订后验收项自动失效的情况。
 
-在一个合成玩具项目上用 headless Claude Code 试跑过一次：10 个动作后达到 done，经历了"代码推翻前提 → 改写问题"的回退和三视角 GRILL。详见 [auto-mode-trial](../evaluations/auto-mode-trial.md)。试跑暴露出专项技能没有被加载，协议已修正，但修正后尚未重跑。
+在一个合成玩具项目上用 headless Claude Code 试跑过一次：10 个动作后达到 done，经历了"代码推翻前提 → 改写问题"的回退和三视角 GRILL。详见 [auto-mode-trial](../evaluations/auto-mode-trial.md)。试跑暴露出专项技能只被截断读取，协议已修正，但修正后尚未重跑。
+
+**0.2.1：** 外部严格审查用 11 条合成反例复现了检查器的漏洞（`analysis/open-scientist-v02-audit/`）。修复后拦下其中 9 条：验收项和预算被自行放宽、无用户回答就恢复、引用旧版本或已撤回的证据、反证被软化或被版本升级抹掉、仅凭理由的 rejected、用旧版本的决定做停止依据。`tests/test_workflow.py` 新增 6 项回归测试。仍可复现的 2 条是有意不做的：无关笔记冒充代码或 Card（需要给 Material 加类型）；检查点在执行后才写（需要执行器）。见 auto-loop 第 9 节。
 
 ## [已核／未核] 双源检索
 

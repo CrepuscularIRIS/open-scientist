@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "open-scientist-local"
-version = "0.2.0"
+version = "0.2.1"
 description = "Local research records and literature adapters for the Open Scientist Codex / Claude Code plugin"
 requires-python = ">=3.10"
 license = {text = "MIT AND Apache-2.0"}
