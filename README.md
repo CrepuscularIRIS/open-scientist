@@ -1,4 +1,4 @@
-# Open Scientist · Codex / Claude Code 插件 v0.1
+# Open Scientist · Codex / Claude Code 插件 v0.2
 
 将 ResearchStudio 的证据、机制构造与反例检查，Research Companion 的选题、跨域联想与投入判断，以及 Co-Scientist 的假设审查、演化与证据关系组织在同一套研究记录上。
 

@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/lingxufeng/competitor/open-scientist/logs/.516fbaab78f49a5901c51f8ae743e1bc57a55723-audit.json",
+    "files": [
+        {
+            "date": 1792245224546,
+            "name": "/home/lingxufeng/competitor/open-scientist/logs/application-2026-10-17.log",
+            "hash": "18a0f7c71b54d71819319b4b9f85efc32c05ca6c84b4631d652ceee7ef5b252f"
+        }
+    ],
+    "hashType": "sha256"
+}
