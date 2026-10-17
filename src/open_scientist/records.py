@@ -9,19 +9,12 @@ import re
 import sqlite3
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, TypeAdapter, model_validator
+from pydantic import Field, TypeAdapter, model_validator
 
-Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
-Kind = Literal["project", "candidate", "material", "activity", "assessment"]
+from . import workflow
+from .base import Ref, StrictModel, Text
 
-
-class StrictModel(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
-
-
-class Ref(StrictModel):
-    id: Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$")]
-    version: int = Field(ge=1)
+Kind = Literal["project", "candidate", "material", "activity", "assessment", "workflow"]
 
 
 class Project(StrictModel):
@@ -120,13 +113,16 @@ class Disposition(StrictModel):
 Assessment = Annotated[Finding | Decision | Feedback | Disposition, Field(discriminator="type")]
 PAYLOADS = {"project": TypeAdapter(Project), "candidate": TypeAdapter(Candidate),
             "material": TypeAdapter(Material), "activity": TypeAdapter(Activity),
-            "assessment": TypeAdapter(Assessment)}
+            "assessment": TypeAdapter(Assessment), "workflow": TypeAdapter(workflow.Workflow)}
 
-KINDS = {"project", "candidate", "material", "activity", "assessment"}
+KINDS = set(PAYLOADS)
 
 
 def references(payload: dict):
     """Read only typed reference fields, never infer references from claim text."""
+    if "criteria" in payload:  # workflow checkpoint
+        yield from workflow.workflow_references(payload)
+        return
     for field in ("problem", "subject"):
         if field in payload:
             yield payload[field]
@@ -209,6 +205,10 @@ class Store:
             self._validate_links(conn, kind, payload)
             if current and kind == "activity":
                 self._validate_activity_update(current["payload"], payload)
+            if kind == "workflow":
+                everything = [self._record(row) for row in conn.execute("SELECT * FROM records")]
+                history = [r for r in everything if r["id"] == record_id]
+                workflow.validate_transition(current["payload"] if current else None, payload, history, everything)
             result = {"id": record_id, "version": actual + 1, "kind": kind,
                       "created_at": datetime.now(timezone.utc).isoformat(), "payload": payload}
             conn.execute("INSERT INTO records VALUES (?,?,?,?,?)", (
@@ -247,6 +247,16 @@ class Store:
         if old["status"] != "plan" or new["status"] != "plan":
             if any(old[field] != new[field] for field in ("objective", "plan", "inputs")):
                 raise ValueError("activity objective, plan, and inputs are frozen once started")
+
+    def check_workflow(self, record_id: str, version: int | None = None) -> dict:
+        """Evaluate a workflow's declared acceptance criteria against current records."""
+        record = self.get(record_id, version)
+        if record["kind"] != "workflow":
+            raise ValueError(f"{record_id} is not a workflow record")
+        with closing(self._connect()) as conn:
+            everything = [self._record(row) for row in conn.execute("SELECT * FROM records")]
+        return {"workflow": {"id": record["id"], "version": record["version"]},
+                "status": record["payload"]["status"], **workflow.check(record["payload"], everything)}
 
     def get(self, record_id: str, version: int | None = None) -> dict:
         if version is not None and (type(version) is not int or version < 1):

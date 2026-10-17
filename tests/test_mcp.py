@@ -43,7 +43,7 @@ def test_real_stdio_tools_write_read_context_and_reject_unscoped_request(tmp_pat
                 assert info.serverInfo.name == "open-scientist-records"
                 tools = (await session.list_tools()).tools
                 names = {tool.name for tool in tools}
-                assert names == {"records_put", "records_get", "records_list", "records_context", "records_history"}
+                assert names == {"records_put", "records_get", "records_list", "records_context", "records_history", "workflow_check"}
                 assert all("project_root" in t.inputSchema["required"] for t in tools)
                 assert not (tmp_path / ".open-scientist").exists()
                 invalid = await session.call_tool("records_list", {})
@@ -60,6 +60,19 @@ def test_real_stdio_tools_write_read_context_and_reject_unscoped_request(tmp_pat
                 assert not context.isError
                 assert context.structuredContent["truncated"] is False
                 assert context.structuredContent["records"][0]["id"] == "project"
+                started = await session.call_tool("records_put", {
+                    "project_root": str(tmp_path), "kind": "workflow", "record_id": "run",
+                    "payload": {"goal": "Checked research plan", "project": {"id": "project", "version": 1},
+                                "criteria": ["question", "literature"], "max_actions": 5, "actions_used": 0,
+                                "status": "active", "stage": "frame",
+                                "next_action": {"skill": "research-retrieve", "question": "Prior work?", "why": "none read"}},
+                    "expected_version": 0,
+                })
+                assert not started.isError, started.content
+                checked = await session.call_tool("workflow_check", {"project_root": str(tmp_path), "workflow_id": "run"})
+                assert not checked.isError, checked.content
+                assert checked.structuredContent["ready"] is False
+                assert checked.structuredContent["criteria"]["literature"]["pass"] is False
                 invalid = await session.call_tool("records_put", {
                     "project_root": str(tmp_path), "kind": "material", "record_id": "bad",
                     "payload": {"source": "paper", "content": "quote", "supports": True}, "expected_version": 0,

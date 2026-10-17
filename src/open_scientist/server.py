@@ -18,6 +18,7 @@ mcp = FastMCP(
     instructions="Versioned research records only. Every call needs an explicit project_root. "
     "No command execution, model calls, network fetching, or background research. "
     "References are exact {id, version} in that project. Findings and investment decisions are separate. "
+    "Auto mode keeps one workflow record per run; workflow_check reports which acceptance criteria still fail. "
     "Consult docs/record-api.md in the plugin for payload contracts.",
 )
 
@@ -31,7 +32,8 @@ def records_put(project_root: Root, kind: Kind, record_id: str,
     """Append one validated record. New ID: expected_version=0; update: exact current revision.
 
     Kinds: project(question), candidate(problem Ref/mechanism/claims), material(source/content),
-    activity(objective/status/plan/inputs), assessment(type finding/decision/feedback/disposition).
+    activity(objective/status/plan/inputs), assessment(type finding/decision/feedback/disposition),
+    workflow(auto-mode checkpoint: goal/project/criteria/max_actions/actions_used/status/stage/next_action).
     Unknown payload fields and dangling references are rejected. There is no overwrite/delete.
     """
     return Store(project_root).put(kind, record_id, payload, expected_version)
@@ -57,6 +59,17 @@ def records_context(project_root: Root, subject: Ref | None = None) -> dict[str,
     review, not automatic reruns. Recorded running status does not prove a process is alive.
     """
     return Store(project_root).context(subject.model_dump() if subject else None)
+
+
+@mcp.tool(annotations=READ)
+def workflow_check(project_root: Root, workflow_id: str, version: Version | None = None) -> dict[str, Any]:
+    """Check an auto-mode workflow's declared acceptance criteria against current record versions.
+
+    Returns pass/detail per criterion (question, literature, code, counterexamples, test_plan, card,
+    decision) and `ready`. Writing status=done is refused unless ready. Structural check only: cited
+    records must exist, be current and be linked to the focus candidate; it does not judge the science.
+    """
+    return Store(project_root).check_workflow(workflow_id, version)
 
 
 @mcp.tool(annotations=READ)

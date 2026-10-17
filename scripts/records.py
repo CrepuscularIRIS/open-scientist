@@ -27,6 +27,9 @@ def main(argv=None):
     listing.add_argument("--kind", choices=sorted(KINDS))
     history = commands.add_parser("history")
     history.add_argument("record_id")
+    checking = commands.add_parser("check", help="workflow acceptance check")
+    checking.add_argument("record_id")
+    checking.add_argument("--version", type=int)
     context = commands.add_parser("context")
     context.add_argument("--subject-id")
     context.add_argument("--subject-version", type=int)
@@ -42,6 +45,8 @@ def main(argv=None):
             result = store.list(args.kind)
         elif args.command == "history":
             result = store.history(args.record_id)
+        elif args.command == "check":
+            result = store.check_workflow(args.record_id, args.version)
         else:
             if (args.subject_id is None) != (args.subject_version is None):
                 raise ValueError("--subject-id and --subject-version must be provided together")

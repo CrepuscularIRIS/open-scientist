@@ -19,6 +19,17 @@
 不要默认开始训练；给出有区分力的下一步。
 ```
 
+**自动模式**：给出交付目标和授权范围，总入口会持续推进到里程碑，而不是每做完一步就交回：
+
+```text
+/open-scientist:research-workflow 自动研究这个问题，记录写到当前项目。
+目标：交付一个经过文献、代码和反例检查的研究方案，含方法 Card、关键风险和最小判别实验。
+允许检索、读代码、运行廉价本地探测；不启动训练。一般缺口自行补齐，
+直到达到目标、无法取得有效进展，或需要我决定实质方向。
+```
+
+每个动作写一个 `workflow` 检查点：目标、验收项、预算、已做动作、待解决问题、下一动作。`workflow_check` 逐项核对验收项，未通过时后端拒绝写 done。重复的动作键会被拒绝，预算不能超过上限，中断后从检查点继续。协议见 [auto-loop](references/contracts/auto-loop.md)。Claude Code 中，GRILL 阶段可以调用自带的 `research-grill` 子 Agent，从召回、对手审查、对抗攻击三个视角做独立审查。
+
 已有明确任务可以直接调用 `research-retrieve`、`research-code`、`research-review` 等，不必绕回总入口。插件命名空间以宿主显示的 `open-scientist:...` 为准。
 
 Claude Code 可直接从 GitHub 安装：`claude plugin marketplace add CrepuscularIRIS/open-scientist`，再 `claude plugin install open-scientist@open-scientist-local`。完整安装步骤见 [安装与验证](docs/install.md)。这是本地插件源码包；没有自动更改你的全局插件配置、发布到公共目录或替换三个原仓库。
@@ -71,9 +82,9 @@ flowchart LR
 
 ## 共享记录与工具
 
-五类记录是 project、candidate、material、activity、assessment。问题 Q、机制 H、测试 T 各自可以改变；旧结果与反证保留。通过5个本地MCP工具或同一CLI访问，见 [记录API](docs/record-api.md)。
+五类记录是 project、candidate、material、activity、assessment。问题 Q、机制 H、测试 T 各自可以改变；旧结果与反证保留。通过6个本地MCP工具（5个记录工具加 `workflow_check`）或同一CLI访问，见 [记录API](docs/record-api.md)。
 
-MCP只做保存、读取、版本和上下文，不启动训练、调用模型或调度后台研究。宿主 Agent 负责实际读代码、查来源、执行获授权的测试并解释结果。它不自动保证“写入的主张为真”，也不自动生成盲审上下文。
+MCP只做保存、读取、版本、上下文和验收检查，不启动训练、调用模型或调度后台研究；自动模式的循环由宿主 Agent 执行。宿主 Agent 负责实际读代码、查来源、执行获授权的测试并解释结果。它不自动保证“写入的主张为真”，也不自动生成盲审上下文。
 
 检索使用只读SQLite FTS5及arXiv公开关键词接口，见 [检索说明](docs/search-adapter.md)。不复制论文库、不自动建索引、不需要Semantic Scholar/OpenAlex密钥。两源状态分别保存；本地空结果和远端不可达不能变成“新颖性高”。
 

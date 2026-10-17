@@ -4,7 +4,7 @@
 
 | 入口 | 活动方法参考 | 原资产与本次改动 |
 |---|---|---|
-| workflow | [共同合同](../references/contracts/research-contract.md)、[32桥接](../references/contracts/bridges.md) | Companion模式/Seed/Decide＋Co目标解析；用触发替代固定六阶段/常驻session |
+| workflow | [共同合同](../references/contracts/research-contract.md)、[32桥接](../references/contracts/bridges.md)、[自动模式](../references/contracts/auto-loop.md) | Companion模式/Seed/Decide＋Co目标解析；用触发替代固定六阶段/常驻session |
 | retrieve | [intent](../references/methods/intent-recognition.md)、[reading](../references/methods/relevance-and-reading.md)、[collision](../references/methods/collision-check.md) | RS查询、相关性、深读与Scoop；改默认local+arXiv、主题/用途双轴、任何阶段增量覆盖 |
 | diagnose | [bottleneck](../references/methods/bottleneck_identify.md) | RS谱系/残差/规则/价值；纳入代码，解除近期叶子/篇数/默认预算限制 |
 | ideate | [brainstormer](../references/methods/companion-brainstormer.md)、[select](../references/methods/ideate_select.md) | Companion跨域/前提挑战＋RS选择；需要对象/操作/条件/断点，模式是可选词汇 |
@@ -26,7 +26,7 @@
 | R-1…8 | retrieve/review/test/evolve/decide | 机制碰撞、来源矛盾、区分实验、反例核查、局部重查、不同预测、投入选择、结果分类 |
 | O-1…6 | report/code/review/diagnose/decide | 表达缺口、规格缺口、A/B/C诊断、结论边界、可撤回教训、反馈消费 |
 
-这些桥接由Agent依据技能合同选择；后端没有暗含自动推进状态机。实现的是统一记录、明确输入输出与版本检查，未实现自动科学判断、自动依赖推理或全局规则自改写。
+这些桥接由Agent依据技能合同选择。自动模式下，宿主 Agent 按 [auto-loop](../references/contracts/auto-loop.md) 循环推进，后端用 `workflow` 记录保存检查点，并用 `workflow_check` 机械核对验收项；后端本身不调度。实现的是统一记录、明确输入输出与版本检查，未实现自动科学判断、自动依赖推理或全局规则自改写。
 
 ## 保真与适配边界
 

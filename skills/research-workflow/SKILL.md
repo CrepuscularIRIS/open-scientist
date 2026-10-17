@@ -1,6 +1,6 @@
 ---
 name: research-workflow
-description: Use when starting or resuming a research project, coordinating literature and code investigation, or choosing the next research action after new evidence or feedback.
+description: Use when starting or resuming a research project, coordinating literature and code investigation, choosing the next research action after new evidence or feedback, or running research autonomously until a milestone (auto mode - "自动研究", "持续推进", "直到交付", "auto"), such as a literature-, code- and counterexample-checked plan with a method card and minimal discriminating test.
 ---
 
 # Open Scientist：组织一次有证据的研究行动
@@ -12,6 +12,15 @@ description: Use when starting or resuming a research project, coordinating lite
 新方向、项目恢复、跨技能交接或用户不知道该先做什么时进入本技能。用户已经明确要求查一条引用、检查一个反例或仅改文案时，保留现有上下文并直接调用相应技能，不追加一次完整 Seed 访谈。
 
 开始前读取 [共同合同](../../references/contracts/research-contract.md)。共享数据的实际字段与命令见 [record API](../../docs/record-api.md)。文中的 Q/H/T 是研究语义，不要求建立额外状态机或服务。
+
+## 两种模式
+
+| 模式 | 何时用 | 行为 |
+|---|---|---|
+| 单步（默认） | 用户要一个判断、一次检索或下一步建议 | 选一个能改变决定的动作，完成后按操作 6 停下 |
+| 自动 | 用户说"自动研究""持续推进""直到交付/达成目标"，或给出交付目标与授权范围 | 按 [自动模式协议](../../references/contracts/auto-loop.md) 循环：一个动作写一个 workflow 检查点，`workflow_check` 未通过、预算未用完、也没有需要用户决定的事项时，继续下一轮 |
+
+自动模式启动时先写 project 与 workflow v1（目标、验收项、授权/禁止、预算），之后每个专项技能完成都不交回用户，而是更新检查点并选下一缺口。只有协议第 3 节的终止条件成立时才停：达成（后端要求验收全部通过才允许 done）、有依据地停止、预算用尽、无进展、越权或需要用户做实质选择。恢复时先读最新 workflow 记录，从 next_action 继续，不重复已记录的动作键。
 
 ## 输入：足以选动作的信息
 
@@ -81,6 +90,8 @@ description: Use when starting or resuming a research project, coordinating lite
 遇到版本冲突先重读当前对象，检查他人的修改，再提出有来由的新版本。用反例修订 H 时保留原始反例及其曾对旧 H 成立的事实。
 
 ## 操作 6：在明确边界停止
+
+以下是单步模式的停止规则；自动模式改用 [自动模式协议](../../references/contracts/auto-loop.md) 第 3 节的终止表，完成一个技能不等于该停。
 
 本轮结束至少留下：当前问题、已核与未核、改变了什么判断、下一项可区分行动及停止原因。可以在“问题不成立”“测试当前不可行”“证据尚不足”处结束；无需制造一张看似成熟的 idea card。
 

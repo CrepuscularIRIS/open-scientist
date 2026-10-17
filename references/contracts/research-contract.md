@@ -12,6 +12,8 @@
 | activity | 计划 T、使用的版本、执行边界、状态和原始产物 | plan、running、completed、failed 不同；completed 不等于科学通过 |
 | assessment | finding、decision、feedback、disposition | 机制判断、证据方向、投入决定、反馈消费各自有理由 |
 
+自动模式另有一类 `workflow` 记录，保存循环状态（目标、验收项、预算、检查点），不是科研事实，见 [auto-loop](auto-loop.md)。
+
 实际 API 以 [record-api](../../docs/record-api.md) 为准；不要把文中的简记当作可直接提交的 JSON。引用统一 `{id, version}`，引用的对象必须先写入同一项目。每次更新提供 `expected_version`，发生冲突先重新读取并合并事实，不能无条件覆盖。无 MCP 时使用同一 CLI，见 API 文档；仍无法使用时保留带版本的 Markdown 交接并明确尚未入库。
 
 研究项目根目录必须由当前用户任务或已明确的工作区得出，不能默认写到插件安装目录。记录后端只保存 Agent 提交的资料并检查结构、引用与版本；不自动验证科学结论，不拥有命令执行权。

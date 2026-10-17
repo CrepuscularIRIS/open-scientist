@@ -5,7 +5,7 @@ project directory. Only writes create `.open-scientist/records.sqlite3` there.
 Nothing selects `$HOME`, the current directory, or the installed plugin as a
 default project. The runtime does not fetch URLs, execute commands, or run jobs.
 
-## Five operations
+## Six operations
 
 | MCP tool | Arguments besides `project_root` | Result |
 |---|---|---|
@@ -14,6 +14,7 @@ default project. The runtime does not fetch URLs, execute commands, or run jobs.
 | `records_list` | optional `kind` | All latest records; no hidden limit |
 | `records_context` | optional `subject` exact reference | All latest records, referenced historical versions, unresolved feedback, stale-input notices |
 | `records_history` | `record_id` | All revisions, oldest first |
+| `workflow_check` | `workflow_id`, optional `version` | Pass/detail per acceptance criterion and `ready` for an auto-mode workflow |
 
 Python equivalents are `Store(project_root).put(kind, record_id, payload,
 expected_version)`, `.get(record_id, version=None)`, `.list(kind=None)`,
@@ -40,6 +41,7 @@ lists default to empty. Text fields must contain non-whitespace characters.
 | `material` | `source: string`, `content: string` | `locator: string`, `scope: string` |
 | `activity` | `objective: string`, `status: plan/running/completed/failed`, `plan: string`, `inputs: Ref[]` | `outputs: Ref[]`, `result: string`, `failure: string`, `change_note: string` |
 | `assessment` | See the four variants below | — |
+| `workflow` | `goal`, `project: Ref`, `criteria[]`, `max_actions`, `actions_used`, `status`, `stage` | `focus: Ref`, `evidence: {criterion: Ref[]}`, `authorized[]`, `forbidden[]`, `last_action`, `open_issues[]`, `next_action`, `question_for_user`, `stop_reason`, `summary` |
 
 Material records contain sources and observations, not a global `supports` flag.
 The caller supplies the actual source content/locator; recording is not source
@@ -85,13 +87,41 @@ or automatic revocation of scientific conclusions. Context has no independent
 review blinding mode: the host must build the appropriate evidence-preserving
 view from these records.
 
+## Workflow checkpoints (auto mode)
+
+A `workflow` record is the loop state of one bounded auto-mode run, not a research
+fact. Protocol: [auto-loop](../references/contracts/auto-loop.md).
+
+- `criteria` ⊆ `question, literature, code, counterexamples, test_plan, card, decision`;
+  `evidence` keys must be declared criteria. `stage` ∈ `frame, ground, abduce, probe, grill, report`.
+- `status` ∈ `active` (needs `next_action`), `waiting_user` (needs `question_for_user`),
+  `paused`, `done` (needs `summary`), `stopped` (needs `stop_reason` and `summary`).
+  `stop_reason` ∈ `evidence_based_stop, no_progress, budget, blocked, user_abort`.
+  `done` and `stopped` are terminal; continue with a new workflow ID.
+- `last_action` = `{key, skill, question, outcome, summary, outputs[]}`, outcome ∈
+  `advanced, no_change, failed, needs_user`. Each checkpoint records at most one action:
+  a new `last_action` increments `actions_used` by exactly one; `actions_used ≤ max_actions`.
+  An action `key` (e.g. `retrieve:h@2:alias-search`) that appears in an earlier checkpoint
+  is rejected; a deliberate retry needs a new key such as `...#2`.
+- `done` is accepted only when `workflow_check` is ready. `evidence_based_stop` needs a
+  kill/park decision with material evidence on the workflow's project or focus.
+
+`workflow_check` criteria: `question` cites the current project version; `literature`
+cites a finding with material evidence; `code` cites material with a `locator`;
+`counterexamples` needs a finding for every claim of the current focus version and a
+resolving disposition for each contradicted/contested one; `test_plan` cites a non-failed
+activity whose inputs include the current focus; `card` cites material written after the
+current focus version; `decision` cites a latest pursue/refine decision on the current focus
+or project. Revising the focus candidate invalidates the focus-dependent criteria. The check
+is structural: it confirms linkage and currency, not scientific correctness.
+
 ## CLI fallback
 
 `python /absolute/plugin/path/scripts/records.py --project-root /absolute/project
 put --kind project --record-id project --expected-version 0 --payload-file
 /absolute/project/question.json`
 
-Other subcommands: `get ID [--version N]`, `list [--kind KIND]`, `history ID`,
+Other subcommands: `get ID [--version N]`, `list [--kind KIND]`, `history ID`, `check WORKFLOW_ID [--version N]`,
 `context [--subject-id ID --subject-version N]`. A payload file is a JSON object;
 `--payload-file -` reads stdin. Success prints JSON to stdout; validation errors
 print to stderr and exit nonzero. The CLI uses the same Store and schema as MCP.
