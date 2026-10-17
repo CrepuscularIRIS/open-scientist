@@ -1,0 +1,14 @@
+{
+  "name": "open-scientist-local",
+  "description": "Local marketplace for the Open Scientist research plugin.",
+  "owner": {
+    "name": "Open Scientist contributors"
+  },
+  "plugins": [
+    {
+      "name": "open-scientist",
+      "source": "./",
+      "description": "Open Scientist research skills and the local research-records MCP server for Claude Code."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "open-scientist",
+  "version": "0.1.0",
+  "description": "Evidence-grounded research: literature and code, problem discovery, mechanism construction, testing, review and decisions.",
+  "license": "MIT AND Apache-2.0",
+  "keywords": ["research", "science", "local-papers", "arxiv", "evidence"],
+  "extensions": {
+    "com.openai": {
+      "requires_local_executor": true,
+      "interface": {
+        "displayName": "Open Scientist",
+        "shortDescription": "从论文、代码和实验形成可核查的科研判断",
+        "longDescription": "融合 ResearchStudio、Research Companion 与 Co-Scientist 的研究方法，按当前问题调用技能，以版本化记录保留证据、反例和决定。默认检索本机论文库与 arXiv。",
+        "category": "Productivity",
+        "capabilities": ["Interactive", "Read", "Write"],
+        "defaultPrompt": ["用 $research-workflow 从当前项目的问题、代码和文献开始研究。", "用 $research-review 核查这个想法的关键前提与反例。", "用 $research-report 生成一张简洁但有证据的 idea card。"],
+        "brandColor": "#185E65"
+      }
+    }
+  }
+}

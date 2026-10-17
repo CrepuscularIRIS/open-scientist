@@ -1,0 +1,167 @@
+{
+  "id": 2,
+  "result": {
+    "plugin": {
+      "marketplaceName": "open-scientist-local",
+      "marketplacePath": "/path/to/open-scientist/.agents/plugins/marketplace.json",
+      "summary": {
+        "id": "open-scientist@open-scientist-local",
+        "remotePluginId": null,
+        "version": null,
+        "localVersion": "0.1.0",
+        "name": "open-scientist",
+        "shareContext": null,
+        "source": {
+          "type": "local",
+          "path": "/path/to/open-scientist"
+        },
+        "installed": false,
+        "installedAt": null,
+        "enabled": false,
+        "installPolicy": "AVAILABLE",
+        "installPolicySource": null,
+        "mustShowInstallationInterstitial": null,
+        "authPolicy": "ON_INSTALL",
+        "availability": "AVAILABLE",
+        "disabledReason": null,
+        "eligiblePlanTypes": null,
+        "interface": {
+          "displayName": "Open Scientist",
+          "shortDescription": "从论文、代码和实验形成可核查的科研判断",
+          "longDescription": "融合 ResearchStudio、Research Companion 与 Co-Scientist 的研究方法，按当前问题调用技能，以版本化记录保留证据、反例和决定。默认检索本机论文库与 arXiv。",
+          "developerName": null,
+          "category": "Productivity",
+          "capabilities": [
+            "Interactive",
+            "Read",
+            "Write"
+          ],
+          "websiteUrl": null,
+          "privacyPolicyUrl": null,
+          "termsOfServiceUrl": null,
+          "defaultPrompt": [
+            "用 $research-workflow 从当前项目的问题、代码和文献开始研究。",
+            "用 $research-review 核查这个想法的关键前提与反例。",
+            "用 $research-report 生成一张简洁但有证据的 idea card。"
+          ],
+          "brandColor": "#185E65",
+          "composerIcon": null,
+          "composerIconUrl": null,
+          "logo": null,
+          "logoDark": null,
+          "logoUrl": null,
+          "logoUrlDark": null,
+          "screenshots": [],
+          "screenshotUrls": []
+        },
+        "keywords": [
+          "research",
+          "science",
+          "local-papers",
+          "arxiv",
+          "evidence"
+        ]
+      },
+      "shareUrl": null,
+      "description": "Evidence-grounded research: literature and code, problem discovery, mechanism construction, testing, review and decisions.",
+      "skills": [
+        {
+          "name": "open-scientist:research-code",
+          "description": "Use when a research premise depends on implementation, data availability, evaluation logic, logs, or environment facts, or when code may explain an apparent scientific failure.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-code/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-construct",
+          "description": "Use when a research direction needs a concrete mechanism, implementable dataflow, explicit assumptions and estimand, fair naive baseline, or a falsifiable prediction before code or experiments are expanded.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-construct/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-decide",
+          "description": "Use when choosing whether to pursue, refine, park, kill, pivot, or resume research, when resource or user constraints change, or when plausible alternatives need an investment choice without a forced scientific winner.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-decide/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-diagnose",
+          "description": "Use when a research bottleneck is vague, literature and code disagree, a claimed gap may be a known solution or evaluation artifact, or new evidence changes which problem is actually being studied.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-diagnose/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-evolve",
+          "description": "Use when an existing research mechanism needs repair, simplification, combination, or reframing; when a useful test is infeasible; or when repeated findings expose a shared faulty assumption.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-evolve/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-ideate",
+          "description": "Use when a grounded research question needs alternative mechanisms, cross-domain connections, challenged assumptions, or a clearer distinction between promising directions and renamed existing ideas.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-ideate/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-report",
+          "description": "Use when a research idea, experiment, competing hypotheses, or project history needs a card, overview, explanation, translation, progress report, or evidence-bounded conclusion.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-report/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-retrieve",
+          "description": "Use when research needs related work, a missing source, a cross-field mechanism, a baseline comparison, an unresolved citation, or evidence about a specific novelty claim at any stage.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-retrieve/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-review",
+          "description": "Use when a research claim, mechanism, experiment, citation, or revision needs scrutiny; when reviewers disagree; or when favorable scores conflict with raw counterevidence.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-review/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-test",
+          "description": "Use when a research claim needs a discriminating experiment, executable counterexample, numerical dry run, or interpretation of completed and failed test runs.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-test/SKILL.md",
+          "enabled": true
+        },
+        {
+          "name": "open-scientist:research-workflow",
+          "description": "Use when starting or resuming a research project, coordinating literature and code investigation, or choosing the next research action after new evidence or feedback.",
+          "shortDescription": null,
+          "interface": null,
+          "path": "/path/to/open-scientist/skills/research-workflow/SKILL.md",
+          "enabled": true
+        }
+      ],
+      "onboardingSkill": null,
+      "hooks": [],
+      "apps": [],
+      "appTemplates": [],
+      "mcpServers": [
+        "research-records"
+      ],
+      "scheduledTasks": null
+    }
+  }
+}

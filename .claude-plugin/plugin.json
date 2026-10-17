@@ -1,0 +1,16 @@
+{
+  "name": "open-scientist",
+  "version": "0.1.0",
+  "description": "Evidence-grounded research: local papers + arXiv, code and data investigation, problem diagnosis, mechanism construction, testing, review and decisions on versioned shared records.",
+  "author": {
+    "name": "Open Scientist contributors"
+  },
+  "license": "MIT AND Apache-2.0",
+  "keywords": ["research", "science", "local-papers", "arxiv", "evidence", "mcp"],
+  "mcpServers": {
+    "research-records": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/mcp_server.py"]
+    }
+  }
+}

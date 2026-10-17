@@ -1,0 +1,1039 @@
+{
+  "schema_version": 1,
+  "archive_mode": "verbatim-working-tree",
+  "repositories": [
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "dirty": false,
+      "license": "MIT",
+      "source_scope": [
+        "ResearchStudio-Idea/skills/idea_spark/references",
+        "ResearchStudio-Idea/skills/idea_spark/SKILL.md",
+        "ResearchStudio-Idea/skills/paper_search/SKILL.md",
+        "ResearchStudio-Idea/skills/scoop_check/SKILL.md",
+        "ResearchStudio-Idea/evaluation/idea_quality/SKILL.md",
+        "LICENSE"
+      ]
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "dirty": true,
+      "license": "MIT",
+      "source_scope": [
+        "agents",
+        "principles",
+        "skills/research-companion/SKILL.md",
+        "codex-skills/research-companion/SKILL.md",
+        "LICENSE"
+      ]
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "dirty": false,
+      "license": "Apache-2.0",
+      "source_scope": [
+        "plugin/skills",
+        "config/prompts",
+        "LICENSE"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "LICENSE",
+      "dirty": false,
+      "sha256": "db60a6df93f1786929a223558ca0c202ef61095600785cf7503fbcd4bac1bd02",
+      "bytes": 1062,
+      "archive_path": "vendor/research-studio/LICENSE",
+      "license_copy_path": "licenses/research-studio/LICENSE"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/evaluation/idea_quality/SKILL.md",
+      "dirty": false,
+      "sha256": "ef034152d6e9ea1273709d166debfe7dcba0d635a70d2b1bbe53cd15bb3bde23",
+      "bytes": 12215,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/evaluation/idea_quality/SKILL.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/SKILL.md",
+      "dirty": false,
+      "sha256": "cfa9bdab8546e4ba54213341bfe026f1e246a48d2f4fbba82b25c6eed19e6488",
+      "bytes": 67548,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/SKILL.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/anti-patterns.md",
+      "dirty": false,
+      "sha256": "bdb25ffe55796ec6f2b3e8296fec53141fcca81c33ea50696f20ae5101256555",
+      "bytes": 5789,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/anti-patterns.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/design-notes.md",
+      "dirty": false,
+      "sha256": "7e9bc3c7196c45ea4bf6b1053d860f8f044d2551b5059d074592e31825345ca1",
+      "bytes": 52055,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/design-notes.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/adapt_via_conditioning.md",
+      "dirty": false,
+      "sha256": "b5aac2a729f2c46ae2a7a593823115fec9749da30477c6aeb75a2c36325f085b",
+      "bytes": 13442,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/adapt_via_conditioning.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/algebraic_equivalence_unification.md",
+      "dirty": false,
+      "sha256": "f52205190e01c73e751d586bafb44b53df85d3a75a6a58214922b6b0c45a9a33",
+      "bytes": 12905,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/algebraic_equivalence_unification.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/architectural_operator_substitution.md",
+      "dirty": false,
+      "sha256": "3d19340d40077d188b19d8db29f6dc531068b2f94f474a814a12e6da47a220e7",
+      "bytes": 13456,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/architectural_operator_substitution.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/assumption_audit_and_pivot.md",
+      "dirty": false,
+      "sha256": "09e166f1511831bae513bd7c25cc63440c5f14110a88430af8b9c5d157aa5cc3",
+      "bytes": 13046,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/assumption_audit_and_pivot.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/characterize_limit_then_surpass.md",
+      "dirty": false,
+      "sha256": "546e02ccfcf965d4084f8d3a00776268f93212b32a3849f2fa20c7a287db5001",
+      "bytes": 11325,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/characterize_limit_then_surpass.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/companion-combos.md",
+      "dirty": false,
+      "sha256": "d3165ba86ae1546da37f8de0cecff93499afa700847e491ec071acdad12d9f23",
+      "bytes": 7287,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/companion-combos.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/controlled_diagnostic_design.md",
+      "dirty": false,
+      "sha256": "6eb00c3e1536238e9e7120479a156b73fcf649c8b20b7615069a463225dbf7c5",
+      "bytes": 12147,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/controlled_diagnostic_design.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/decompose_and_delegate.md",
+      "dirty": false,
+      "sha256": "504a0f168dd1f8fb5e725f1a2d404b172d0967be6f3d91f9d32801067dbaa0cd",
+      "bytes": 13727,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/decompose_and_delegate.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/generative_process_redesign.md",
+      "dirty": false,
+      "sha256": "d8d7a8633ff3243ab5d56f0e3ddabba88cb0314bf01b788922e369d4d19348d0",
+      "bytes": 12389,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/generative_process_redesign.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/heterogeneous_decomposition.md",
+      "dirty": false,
+      "sha256": "08cc30a356d8aeb0c07109c914938c3da14d60c07be809613b2195efd45f4476",
+      "bytes": 14539,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/heterogeneous_decomposition.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/overview.md",
+      "dirty": false,
+      "sha256": "20014a5167c41a0a71b492bb4b20e25947b4cf30c7f86234c020e8d45f7450b2",
+      "bytes": 13284,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/overview.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/reframe_as_solvable_object.md",
+      "dirty": false,
+      "sha256": "a0876cbb5670f0b99d46279079066119a5c795be42aa438aa793be34f7e89dfc",
+      "bytes": 12859,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/reframe_as_solvable_object.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/relax_discrete_search_to_continuous.md",
+      "dirty": false,
+      "sha256": "7a4db9933efa57024083886e5d42432ac5330f56a9ea6a7936de8fd70368b502",
+      "bytes": 13762,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/relax_discrete_search_to_continuous.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/self_supervised_signal_engineering.md",
+      "dirty": false,
+      "sha256": "7e63e33e84b6c6438041999bc7180aba61dfa1e8cd3cfac8bdd0263dcb819f53",
+      "bytes": 13719,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/self_supervised_signal_engineering.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/structural_prior_encoding.md",
+      "dirty": false,
+      "sha256": "3ebc3ea6829e9904b5d73b6b01808e3464115d8cc95795a61005029ca1ad358a",
+      "bytes": 14397,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/structural_prior_encoding.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/targeted_self_supervised_objective.md",
+      "dirty": false,
+      "sha256": "a7e8ba7e87ea63a0446741ed89d53f38b2f7fc85a84c9f69dd75afcb67ba8df1",
+      "bytes": 11294,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/targeted_self_supervised_objective.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/unify_into_shared_representation.md",
+      "dirty": false,
+      "sha256": "ebba3230237271e37d5280030ad147493deed2605fe53f5324f3ebb70f1d599c",
+      "bytes": 14709,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-patterns/unify_into_shared_representation.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C00.md",
+      "dirty": false,
+      "sha256": "0bc790076bc61bc5a902094b3b1326375b20a2210540b9665c97728f8a869d56",
+      "bytes": 9562,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C00.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C01.md",
+      "dirty": false,
+      "sha256": "a09198aec391b4beef0c9630b9c1a1793275ee6b72e8276646b76a95d69b7a3c",
+      "bytes": 8931,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C01.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C02.md",
+      "dirty": false,
+      "sha256": "c526fdc812d2e955da7de11c64be2a0858fa65f331ae0679b5d9170a1d96b5ff",
+      "bytes": 8673,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C02.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C03.md",
+      "dirty": false,
+      "sha256": "8c69e090645656f141b869a7701f6f611917395f2abf6578eced99520dea6da9",
+      "bytes": 8602,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C03.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C04.md",
+      "dirty": false,
+      "sha256": "e479b0ce12a37ce4c9bc052fa2dd3cc9c7f52b77be4b619253fda8defa0c23fe",
+      "bytes": 8406,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C04.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C05.md",
+      "dirty": false,
+      "sha256": "e6c07526be463b48ef858270dba3de30170ecb3fcde37ad66d4dc635e0f34d48",
+      "bytes": 9612,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C05.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C06.md",
+      "dirty": false,
+      "sha256": "d1570fddded634848788b33c6a731dbce440d0450e6f3c550f0f517d87a7bba8",
+      "bytes": 8439,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C06.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C07.md",
+      "dirty": false,
+      "sha256": "1cf23b65fbee15bbbffcda7f4af3542f60cc167134efce2e203cd0fc4aede69f",
+      "bytes": 9632,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C07.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C08.md",
+      "dirty": false,
+      "sha256": "dd9b19e9af3315d69cd3435f2033c87d1d6ca44126603db2595ece8952f0e16b",
+      "bytes": 9002,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C08.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C09.md",
+      "dirty": false,
+      "sha256": "e178b7925e08f94311f28639a88030f84ece1468b7080707472afe432ff4126e",
+      "bytes": 8485,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C09.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C10.md",
+      "dirty": false,
+      "sha256": "8724aaff35a9704544a9be7625e6a05d58c606335f3a65e99a825d3bbce8366a",
+      "bytes": 8259,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C10.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C11.md",
+      "dirty": false,
+      "sha256": "74f197a89da72069cef06640e425cb5fed8b36fa3f2247ac50690424ec904c65",
+      "bytes": 9686,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C11.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C12.md",
+      "dirty": false,
+      "sha256": "6157bfd876ba96f837c0f577399f6afc1602e419c45fe77424f57b5e446a8927",
+      "bytes": 9409,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C12.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C13.md",
+      "dirty": false,
+      "sha256": "7e19113e0aff6d02e77fc4a9898c6c5edae5a1b20f6c46bf65cd78fae0e62d9b",
+      "bytes": 9020,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C13.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C14.md",
+      "dirty": false,
+      "sha256": "5eb5d1ba44a72a8e8274a8958a1e9ac64b0badb96896f637d2072733e2312abe",
+      "bytes": 9519,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C14.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C15.md",
+      "dirty": false,
+      "sha256": "fce7d01cac2fe7f8562d5de2af87159547d7a7e9bb9b115560af14a00a6f8999",
+      "bytes": 9267,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C15.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C16.md",
+      "dirty": false,
+      "sha256": "0978269b1da55a84902d42087c8d481a3fb40c6d299870d760ff9a64df1ed70e",
+      "bytes": 9354,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C16.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C17.md",
+      "dirty": false,
+      "sha256": "7909db559de1066dee94d425dd43285f7a88c619ba65870632bf787629aaf167",
+      "bytes": 8079,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C17.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C18.md",
+      "dirty": false,
+      "sha256": "871ad780b2120f7f4bd0930a3ae0d2c66e3928368a5ffbf36f4777c3fb8d01a6",
+      "bytes": 8422,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C18.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C19.md",
+      "dirty": false,
+      "sha256": "80f960607eadbb4c61eb9e8c9b7394e76d36b568700fdcc73b53ea9cc7ac6cce",
+      "bytes": 9872,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C19.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C20.md",
+      "dirty": false,
+      "sha256": "44b744d5822c8c662171e2f9607e78f0dd57246938254a22354e05386841c63f",
+      "bytes": 9045,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C20.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C21.md",
+      "dirty": false,
+      "sha256": "5f37f2da95b53bfc32fa8a257293cbf549dc1959a45e933949e04bad4b65e89f",
+      "bytes": 8904,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C21.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C22.md",
+      "dirty": false,
+      "sha256": "094fa0747a14ae5f706575ad7be75604d7ccd307420e39ad22c79bc870c5a17c",
+      "bytes": 8823,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C22.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C23.md",
+      "dirty": false,
+      "sha256": "d301755650014fa6d6df8c14faadbdc32aea4952c2bca76e209981495682f455",
+      "bytes": 8809,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C23.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C24.md",
+      "dirty": false,
+      "sha256": "b4f8759c8da5248c192265a3b42dfd6356e98fcae95a8f8d6048dabeee28bd8a",
+      "bytes": 9523,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C24.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C25.md",
+      "dirty": false,
+      "sha256": "ced46168bbcc6ab1aeaf9a242b47631d6076097bd8758c08560c3faa888da4ff",
+      "bytes": 8369,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C25.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C26.md",
+      "dirty": false,
+      "sha256": "8b3b77eb217046fa5c64a7f5fd38a67bbfc96550b92cc6249a46241d222318ae",
+      "bytes": 9016,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C26.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C27.md",
+      "dirty": false,
+      "sha256": "1c6a3b88c1c50aab2841681e9eeea8e6279409b02f4221eca7aa8e3059795bf4",
+      "bytes": 8492,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C27.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C28.md",
+      "dirty": false,
+      "sha256": "d72af42e36a4333f45f633454858cada56aca66b4b3ac1c711f23abad3273b6c",
+      "bytes": 9159,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C28.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C29.md",
+      "dirty": false,
+      "sha256": "9f619738bcf908ebbb9b27a771b83007b4370ac5fc9f84738b3c823fb5789ca1",
+      "bytes": 9316,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C29.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C30.md",
+      "dirty": false,
+      "sha256": "7e91d3605898cddc818268020289617ca76496905342b58adc4358eedc146497",
+      "bytes": 9966,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/C30.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/overview.md",
+      "dirty": false,
+      "sha256": "bef036e8aed185e598f98caf45984b2444b47a45e3f35babe3bb038ff006a8fa",
+      "bytes": 3044,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/ideation-sub-patterns/overview.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/intake-routing.md",
+      "dirty": false,
+      "sha256": "234c9a1963c7e024d6365fb89844ed83ee29d494e8d64600a2dcf86d7541a3cd",
+      "bytes": 2446,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/intake-routing.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/intent-recognition.md",
+      "dirty": false,
+      "sha256": "5560bf6a8c27ea903ce8690e73ef6ca9fcf15f0460da9f630ac1855d513babbb",
+      "bytes": 11352,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/intent-recognition.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/pattern-summary-rubric.md",
+      "dirty": false,
+      "sha256": "743bcb71345a96edb6d796b00b078a25a2d859981404fd07f4d5d1b7140ff755",
+      "bytes": 8373,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/pattern-summary-rubric.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/regression-directions.md",
+      "dirty": false,
+      "sha256": "d20dc3b3723f11e746b29cbfe3db36f81b9bbdcbe6397d682204c9e719b995ea",
+      "bytes": 4351,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/regression-directions.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/relevance-partition-rubric.md",
+      "dirty": false,
+      "sha256": "a55ad7fc652252d0de2cc4b1ba07edbcee18324518c694942c2303b554116edf",
+      "bytes": 3214,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/relevance-partition-rubric.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/schemas.md",
+      "dirty": false,
+      "sha256": "94cf1024416b233c14414aa955843e33553a007eb019bff1c1fd5f015967da7d",
+      "bytes": 4559,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/schemas.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/setup.md",
+      "dirty": false,
+      "sha256": "f209e2f8c058dccc958505dd9ca68b0c848556f5b3fc7de3c7d2abee489e9016",
+      "bytes": 5671,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/setup.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/source-routing.md",
+      "dirty": false,
+      "sha256": "7cef0e653290592a3bf0d343172aef46da259402f1f0f56ee339d975c28abe5c",
+      "bytes": 3828,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/source-routing.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/bottleneck_identify.txt",
+      "dirty": false,
+      "sha256": "58b822ea26d9de94d10a9ad7dcf9a94879489361b435cbd610c5fb310adcf68c",
+      "bytes": 29213,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/bottleneck_identify.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/coherence_trace.txt",
+      "dirty": false,
+      "sha256": "b53c6ff219a1b4eb1689a9f5728c21e9c8b8b0de1e93babf1b5814214447bb02",
+      "bytes": 23224,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/coherence_trace.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/critique.txt",
+      "dirty": false,
+      "sha256": "b674386c19d0e2bbfaf887f94cb3fa1e8afadebe0e772ca20f0eb2e53e5f0e37",
+      "bytes": 24819,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/critique.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/derive_plain.txt",
+      "dirty": false,
+      "sha256": "a4d2dd61a92c6acf5d1c7562e39e2a1af434e4b07ca857603ec26bc183e7bf37",
+      "bytes": 9518,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/derive_plain.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/expand.txt",
+      "dirty": false,
+      "sha256": "3c9261d04821f51dd8f52678afc07ccdf929a44a7359606da2a3ce15270a9feb",
+      "bytes": 16139,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/expand.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/falsification_reaudit.txt",
+      "dirty": false,
+      "sha256": "032d78e18ee9fd6e1e84bbe4d717c1fc1ab7a71e2cac4b9009e2bf9e413d9705",
+      "bytes": 5927,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/falsification_reaudit.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/ideate_generate.txt",
+      "dirty": false,
+      "sha256": "60728c5c2b351352b7bc49fafdbb320cd4413dcc33a0f40f3c73062679afa3c0",
+      "bytes": 31700,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/ideate_generate.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/ideate_select.txt",
+      "dirty": false,
+      "sha256": "2acf389b68e0a3f752d4fc20299219c6332767f704ab36dc494b51c36c4ec435",
+      "bytes": 25371,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/ideate_select.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/implementability_audit.txt",
+      "dirty": false,
+      "sha256": "952cf7a5950831d676ed6360b95f1b2833faf561c2fbd821c2c0eaaed6402ce1",
+      "bytes": 16400,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/implementability_audit.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/refutation_recheck.txt",
+      "dirty": false,
+      "sha256": "8aca641287a84db080f67f5aa7ddffe3100bb7588b970c80ef04569d619db25d",
+      "bytes": 3233,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/refutation_recheck.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/idea_spark/references/system-prompts/revise.txt",
+      "dirty": false,
+      "sha256": "879eb4df40fc45c32f7f7c3dfe387b587c8abb2872de4b4fbeb39d72b138274a",
+      "bytes": 12641,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/idea_spark/references/system-prompts/revise.txt"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/paper_search/SKILL.md",
+      "dirty": false,
+      "sha256": "9249f89d84d8d6ba86419898376841e19ed531885c91ff1b5290d7c92af07159",
+      "bytes": 17046,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/paper_search/SKILL.md"
+    },
+    {
+      "source_repo": "ResearchStudio",
+      "source_commit": "94edf045637715958cdf7bebab4969f20b49740e",
+      "source_path": "ResearchStudio-Idea/skills/scoop_check/SKILL.md",
+      "dirty": false,
+      "sha256": "f6f05339c99dae0358e862fe4ee48e3139527791d52059830ae7ed06fc744a5c",
+      "bytes": 25574,
+      "archive_path": "vendor/research-studio/ResearchStudio-Idea/skills/scoop_check/SKILL.md"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "LICENSE",
+      "dirty": false,
+      "sha256": "50cb65bc3919f6235c567dcfd82e1d2e398a5e4e64bf1f74d369d1b0f819c0f0",
+      "bytes": 1068,
+      "archive_path": "vendor/research-companion/LICENSE",
+      "license_copy_path": "licenses/research-companion/LICENSE"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "agents/brainstormer.md",
+      "dirty": true,
+      "sha256": "14ce1b4105fb69a91ee633d7c53bf0ffda463c028bf300aa20ab90032ad3f1bf",
+      "bytes": 5733,
+      "archive_path": "vendor/research-companion/agents/brainstormer.md"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "agents/idea-critic.md",
+      "dirty": true,
+      "sha256": "ff1db229c00db959170f9439d897d0c83a6c37bf6b47abd38499d3b9d69a0e5e",
+      "bytes": 8054,
+      "archive_path": "vendor/research-companion/agents/idea-critic.md"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "agents/openai.yaml",
+      "dirty": false,
+      "sha256": "1c3dd0a6da798753b065e98f369c9e27c9d52a4a18aa6c17f05ed98f21efbc74",
+      "bytes": 388,
+      "archive_path": "vendor/research-companion/agents/openai.yaml"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "agents/research-strategist.md",
+      "dirty": true,
+      "sha256": "b8b84efea42c03c571125d9d2db1602d7f91f5c0925d75d2ee5ea70c3362da87",
+      "bytes": 8061,
+      "archive_path": "vendor/research-companion/agents/research-strategist.md"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "codex-skills/research-companion/SKILL.md",
+      "dirty": false,
+      "sha256": "77459a3d8cfa92c51250ff65b6f65cd82f7578367012f202477db47b11734c43",
+      "bytes": 4191,
+      "archive_path": "vendor/research-companion/codex-skills/research-companion/SKILL.md"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "principles/research-strategy.md",
+      "dirty": false,
+      "sha256": "703a745ff08cd6bab4419b82891e56d50fab7d391ae5ff4f49bfe0bfc9240cb1",
+      "bytes": 5141,
+      "archive_path": "vendor/research-companion/principles/research-strategy.md"
+    },
+    {
+      "source_repo": "research-companion",
+      "source_commit": "733e9e8e1ae798e2752b1fc7b829fa8f0904b885",
+      "source_path": "skills/research-companion/SKILL.md",
+      "dirty": true,
+      "sha256": "524a1b640c910be6ed8ec341a4a5a2569436bdf79872da85c14bb33527a0f0a5",
+      "bytes": 13453,
+      "archive_path": "vendor/research-companion/skills/research-companion/SKILL.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "LICENSE",
+      "dirty": false,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357,
+      "archive_path": "vendor/co-scientist/LICENSE",
+      "license_copy_path": "licenses/co-scientist/LICENSE"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/evolution_combine.md",
+      "dirty": false,
+      "sha256": "784827acc5e2904478d2447626cad075ce5b1a25c114819cc9d8b057304cc24c",
+      "bytes": 1191,
+      "archive_path": "vendor/co-scientist/config/prompts/evolution_combine.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/evolution_feasibility.md",
+      "dirty": false,
+      "sha256": "c0d68458c45348b66ebe5622686218817a28b718229f820b82b82674ccfbfa6b",
+      "bytes": 1195,
+      "archive_path": "vendor/co-scientist/config/prompts/evolution_feasibility.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/evolution_out_of_box.md",
+      "dirty": false,
+      "sha256": "f52adee421a16fe04d059290beb2f1d9cdbaced8cb097c2e6ca4fd99276a1c44",
+      "bytes": 1081,
+      "archive_path": "vendor/co-scientist/config/prompts/evolution_out_of_box.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/evolution_simplify.md",
+      "dirty": false,
+      "sha256": "1a655f8b20a061b2837c25065b0a9ab86f07ec3af2b3c61cb747ec8e13620733",
+      "bytes": 873,
+      "archive_path": "vendor/co-scientist/config/prompts/evolution_simplify.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/generation_debate.md",
+      "dirty": false,
+      "sha256": "8f30d213861ad8515f3fd5667055289c5cf3adb8ec9aa1b6ab975a88230b0398",
+      "bytes": 2083,
+      "archive_path": "vendor/co-scientist/config/prompts/generation_debate.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/generation_literature.md",
+      "dirty": false,
+      "sha256": "60d1d97ebda71928e74e7c82c7578f8dec8fb4746c188b3848ea4fbcd344b85f",
+      "bytes": 1318,
+      "archive_path": "vendor/co-scientist/config/prompts/generation_literature.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/metareview_final.md",
+      "dirty": false,
+      "sha256": "f121fcb746e95d7b289fc99f70da0b6e9f2e9b8816305311e72071bd40f96bdc",
+      "bytes": 2099,
+      "archive_path": "vendor/co-scientist/config/prompts/metareview_final.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/metareview_system.md",
+      "dirty": false,
+      "sha256": "c3abca4a83afac6da0ed2e5d56e24c763558f33638629d6b3cc871d8cfd6bc8a",
+      "bytes": 1311,
+      "archive_path": "vendor/co-scientist/config/prompts/metareview_system.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/parse_goal.md",
+      "dirty": false,
+      "sha256": "b93209d337f8f1f0e1baa3532b27cc02ba3e98cea9fb216408fbbf6e4abbe0c1",
+      "bytes": 1141,
+      "archive_path": "vendor/co-scientist/config/prompts/parse_goal.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/ranking_debate.md",
+      "dirty": false,
+      "sha256": "5fc20ad5d5fe2646c8366518e157b278ae3a1731033cea66a0eeef718d11fadb",
+      "bytes": 2100,
+      "archive_path": "vendor/co-scientist/config/prompts/ranking_debate.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/ranking_pairwise.md",
+      "dirty": false,
+      "sha256": "2bd58c3f7b7de1d0d1ee493fe41a71cd8c221c20f917291c3e5c1953df04c91e",
+      "bytes": 1063,
+      "archive_path": "vendor/co-scientist/config/prompts/ranking_pairwise.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/reflection_observation.md",
+      "dirty": false,
+      "sha256": "2b48611584382de25eb4d3793cd124345de38ac8d64d215a615f1b6f4972d508",
+      "bytes": 2260,
+      "archive_path": "vendor/co-scientist/config/prompts/reflection_observation.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/reflection_review.md",
+      "dirty": false,
+      "sha256": "17fb3f07cc7df799ac42aa85b1c2c2f4239018348c154841b8d262c3b4cdb05b",
+      "bytes": 1393,
+      "archive_path": "vendor/co-scientist/config/prompts/reflection_review.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "config/prompts/reflection_verification.md",
+      "dirty": false,
+      "sha256": "e316fe55f9e0601999600da5307e2a516ab2a431498e1e973ea1f3cadc328f66",
+      "bytes": 1285,
+      "archive_path": "vendor/co-scientist/config/prompts/reflection_verification.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/benchmarking-models/SKILL.md",
+      "dirty": false,
+      "sha256": "8f2847e6a9278cce34d4f83f42a2398a6ab29034c0dc7c6e14017bd3950f4800",
+      "bytes": 3348,
+      "archive_path": "vendor/co-scientist/plugin/skills/benchmarking-models/SKILL.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/evolving-hypotheses/SKILL.md",
+      "dirty": false,
+      "sha256": "ab77a2e9976d89ec84579635a58c8087ce0c76ec9a3c638e7ee5453d6d1e4625",
+      "bytes": 4423,
+      "archive_path": "vendor/co-scientist/plugin/skills/evolving-hypotheses/SKILL.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/evolving-hypotheses/reference/combine.md",
+      "dirty": false,
+      "sha256": "b96914dc4b6e978610e82c0b9b8948bb77a24232cfd447d0c4a8eab28baedc28",
+      "bytes": 1719,
+      "archive_path": "vendor/co-scientist/plugin/skills/evolving-hypotheses/reference/combine.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/evolving-hypotheses/reference/feasibility.md",
+      "dirty": false,
+      "sha256": "159f175b975a7bb3c62ea11ae4324399b1d941bae122310f12e3a69d6082694b",
+      "bytes": 1921,
+      "archive_path": "vendor/co-scientist/plugin/skills/evolving-hypotheses/reference/feasibility.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/evolving-hypotheses/reference/out-of-box.md",
+      "dirty": false,
+      "sha256": "a0dec7b0ff4280be60a5c47c076490ef57db714d847a49dacc59eeeb8f018b11",
+      "bytes": 2067,
+      "archive_path": "vendor/co-scientist/plugin/skills/evolving-hypotheses/reference/out-of-box.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/evolving-hypotheses/reference/simplify.md",
+      "dirty": false,
+      "sha256": "b9d9eaca247fd017e751909f5307c19d89119916583214357778844830c3b447",
+      "bytes": 1768,
+      "archive_path": "vendor/co-scientist/plugin/skills/evolving-hypotheses/reference/simplify.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/grounding-claims/SKILL.md",
+      "dirty": false,
+      "sha256": "6a4c55e99fe4721642f41678bb15d63f59772b56e0707d1aaaab49c1aa715325",
+      "bytes": 4281,
+      "archive_path": "vendor/co-scientist/plugin/skills/grounding-claims/SKILL.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/ranking-hypotheses/SKILL.md",
+      "dirty": false,
+      "sha256": "2ee14ef8eb64ac87fe574e3af418bae41b26775bc57e753ad6d2777eec469b21",
+      "bytes": 4811,
+      "archive_path": "vendor/co-scientist/plugin/skills/ranking-hypotheses/SKILL.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/reading-research-overviews/SKILL.md",
+      "dirty": false,
+      "sha256": "1386cffff6197d2cab8213c801d1c352e447e2e2a5b5dbf5cbc5e989387ac7ed",
+      "bytes": 4548,
+      "archive_path": "vendor/co-scientist/plugin/skills/reading-research-overviews/SKILL.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/reviewing-hypotheses/SKILL.md",
+      "dirty": false,
+      "sha256": "30d81f8298d84d91b9b8082402988337a8e852c2f7a8028b18b26e11edeb98ff",
+      "bytes": 5357,
+      "archive_path": "vendor/co-scientist/plugin/skills/reviewing-hypotheses/SKILL.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/reviewing-hypotheses/reference/rubric.md",
+      "dirty": false,
+      "sha256": "717ae9ba788094d0a1997c96ad855b5b9741953c9b1ef235cb647c7a38a572e7",
+      "bytes": 5188,
+      "archive_path": "vendor/co-scientist/plugin/skills/reviewing-hypotheses/reference/rubric.md"
+    },
+    {
+      "source_repo": "Co-Scientist",
+      "source_commit": "49c44089d270f0a931d021eedcf31f57d7e6a30e",
+      "source_path": "plugin/skills/running-research-sessions/SKILL.md",
+      "dirty": false,
+      "sha256": "683a7a87f36db1cbe05d43a4a37cb9e6f938639a18b427a60ab28385d34ae77e",
+      "bytes": 5656,
+      "archive_path": "vendor/co-scientist/plugin/skills/running-research-sessions/SKILL.md"
+    }
+  ]
+}

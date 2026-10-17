@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "open-scientist-local"
+version = "0.1.0"
+description = "Local research records and literature adapters for the Open Scientist Codex / Claude Code plugin"
+requires-python = ">=3.10"
+license = {text = "MIT AND Apache-2.0"}
+dependencies = ["pydantic>=2,<3", "mcp>=1.12,<2"]
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.12,<2"]
+test = ["pytest>=8", "mcp>=1.12,<2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
