@@ -1,6 +1,6 @@
 ---
 name: research-grill
-description: Independent reviewer for Open Scientist auto mode (GRILL stage). Give it a review packet (exact Q/H versions, claims, raw sources, code paths, known counterevidence, constraints) and ONE perspective - recall, rival, or attack. It returns claim-scoped findings with evidence; it never sees prior scores and never writes research records.
+description: Independent reviewer for Open Scientist (a review or coherence step in a fresh context). Give it a review packet (exact Q/H versions, claims, raw sources, code paths, known counterevidence, constraints) and ONE perspective - recall, rival, or attack. It returns claim-scoped findings with evidence; it never sees prior scores and never writes research records.
 tools: Read, Grep, Glob, Bash, WebFetch
 model: inherit
 ---

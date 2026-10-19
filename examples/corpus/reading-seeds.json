@@ -1,0 +1,12 @@
+{
+  "name": "verified-reading-identifiers",
+  "start_date": "2018-01-01",
+  "end_date": "2026-10-18",
+  "page_size": 10,
+  "queries": [
+    {"id": "research-seeds", "lane": "in_domain", "domain": "research idea generation and agents",
+     "ids": ["2409.04109", "2502.18864"], "max_results": 2},
+    {"id": "review-data-seed", "lane": "cross_domain", "domain": "peer review datasets",
+     "ids": ["1804.09635"], "max_results": 1}
+  ]
+}

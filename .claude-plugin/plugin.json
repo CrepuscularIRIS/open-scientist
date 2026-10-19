@@ -1,16 +1,41 @@
 {
   "name": "open-scientist",
-  "version": "0.2.1",
-  "description": "Evidence-grounded research: local papers + arXiv, code and data investigation, problem diagnosis, mechanism construction, testing, review and decisions on versioned shared records.",
+  "version": "0.3.0",
+  "description": "Question-driven research engine: local papers + arXiv, code and data diagnosis, adaptive domain and task assets (cards, expectations, rubric, test protocol), executed discriminating tests, independent review and decisions on versioned shared records. Strict ResearchStudio procedures, adaptive knowledge.",
   "author": {
     "name": "Open Scientist contributors"
   },
   "license": "MIT AND Apache-2.0",
-  "keywords": ["research", "science", "local-papers", "arxiv", "evidence", "mcp"],
+  "keywords": [
+    "research",
+    "science",
+    "local-papers",
+    "arxiv",
+    "evidence",
+    "domain-adaptation",
+    "mcp"
+  ],
+  "userConfig": {
+    "mode": {
+      "type": "string",
+      "title": "Run mode",
+      "description": "Shorthand for two settings. auto: models fill every role, locally. web: design and challenge steps may go to a ChatGPT web handoff (serial; sends packets off the machine). hitl: a person sets goal and budget at intake and makes decisions. web+hitl: both. A study keeps the mode it started with.",
+      "default": "auto",
+      "options": [
+        "auto",
+        "web",
+        "hitl",
+        "web+hitl"
+      ]
+    }
+  },
+  "types": "./types/index.d.ts",
   "mcpServers": {
-    "research-records": {
+    "open-scientist": {
       "command": "python3",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/mcp_server.py"]
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_server.py"
+      ]
     }
   }
 }

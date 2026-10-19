@@ -1,3 +1,5 @@
+> **0.2 reference.** In 0.3 these archived assets are seeds for adaptive assets ([design](design.md) §1–2), never authority.
+
 # Core research asset migration
 
 ## What is preserved

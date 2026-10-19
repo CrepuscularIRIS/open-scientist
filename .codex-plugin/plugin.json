@@ -1,7 +1,7 @@
 {
   "name": "open-scientist",
-  "version": "0.2.1",
-  "description": "Evidence-grounded research with local literature, code investigation, review and shared records.",
+  "version": "0.3.0",
+  "description": "Question-driven research with local literature, code diagnosis, executed tests, adaptive assets and shared records.",
   "license": "MIT AND Apache-2.0",
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
@@ -10,7 +10,13 @@
     "displayName": "Open Scientist",
     "shortDescription": "从论文、代码和实验形成可核查的科研判断",
     "category": "Productivity",
-    "capabilities": ["Interactive", "Read", "Write"],
-    "defaultPrompt": ["用 $research-workflow 检查当前研究问题并选择下一步。"]
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "用 $open-scientist 检查当前研究问题并开始或继续一个 study。"
+    ]
   }
 }

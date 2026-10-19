@@ -1,4 +1,4 @@
-"""Behavioral tests: real stores in temporary project roots, no mocked persistence."""
+"""Record kernel: the Open Scientist 0.2 behavioural tests, ported to the standard-library store."""
 import importlib
 import sqlite3
 
@@ -7,7 +7,7 @@ import pytest
 
 def store(root):
     try:
-        records = importlib.import_module("open_scientist.records")
+        records = importlib.import_module("forge.records")
     except ModuleNotFoundError:
         pytest.fail("The shared-record runtime has not been implemented")
     return records.Store(str(root))
@@ -28,7 +28,7 @@ def candidate(s, record_id="candidate"):
 def test_reading_empty_project_does_not_create_store(tmp_path):
     s = store(tmp_path)
     assert s.list() == []
-    assert not (tmp_path / ".open-scientist").exists()
+    assert not (tmp_path / ".forge").exists()
 
 
 def test_history_keeps_exact_prior_question_after_revision(tmp_path):
@@ -91,7 +91,7 @@ def test_relative_or_missing_root_is_not_silently_created(tmp_path):
 def test_database_rejects_mutation_of_record_history(tmp_path):
     s = store(tmp_path)
     project(s)
-    with sqlite3.connect(tmp_path / ".open-scientist" / "records.sqlite3") as db:
+    with sqlite3.connect(tmp_path / ".forge" / "records.sqlite3") as db:
         with pytest.raises(sqlite3.DatabaseError, match="append-only"):
             db.execute("DELETE FROM records")
 
@@ -208,7 +208,7 @@ def test_store_symlink_cannot_redirect_writes_outside_explicit_project(tmp_path)
     outside = tmp_path / "outside"
     root.mkdir()
     outside.mkdir()
-    (root / ".open-scientist").symlink_to(outside, target_is_directory=True)
+    (root / ".forge").symlink_to(outside, target_is_directory=True)
     with pytest.raises(ValueError, match="symlink"):
         project(store(root))
     assert list(outside.iterdir()) == []
@@ -269,3 +269,23 @@ def test_feedback_revision_does_not_erase_unconsumed_prior_instruction(tmp_path)
         "outputs": [{"id": "feedback", "version": 2}],
     }, 0)
     assert [(r["id"], r["version"]) for r in s.context()["unresolved_feedback"]] == [("feedback", 2)]
+
+
+def test_a_v02_store_is_imported_unchanged_and_workflow_records_are_skipped(tmp_path):
+    """0.2 wrote <project>/.open-scientist/records.sqlite3 with the same table; 0.3 copies its history verbatim."""
+    old_root = tmp_path / "old"
+    old_root.mkdir()
+    old = importlib.import_module("forge.records").Store(str(old_root), path=old_root / ".open-scientist" / "records.sqlite3")
+    old.put("project", "project", {"question": "Why does retrieval fail?"}, 0)
+    old.put("project", "project", {"question": "Why does retrieval truncate?", "change_note": "probe"}, 1)
+    with sqlite3.connect(old.path) as conn:  # a 0.2 workflow checkpoint, which 0.3 does not port
+        conn.execute("INSERT INTO records VALUES ('wf', 1, 'workflow', 't', '{\"criteria\": {}}')")
+    new_root = tmp_path / "new"
+    new_root.mkdir()
+    from forge.cli_study import ARCHIVE, import_v02
+    result = import_v02(new_root, old.path)
+    assert result["imported"] == 2 and result["skipped_workflow_records"] == ["wf"]
+    archive = store(new_root).__class__(str(new_root), path=new_root / ARCHIVE)
+    assert [r["payload"]["question"] for r in archive.history("project")] == ["Why does retrieval fail?", "Why does retrieval truncate?"]
+    with pytest.raises(ValueError, match="written once"):
+        import_v02(new_root, old.path)

@@ -1,3 +1,5 @@
+> **0.2 reference.** In 0.3 the eleven skills are entries that forward to `open-scientist`; their methods are in [references/methods/actions/](../references/methods/actions/).
+
 # 技能、核心资产与桥接覆盖
 
 每项skill都是详细操作指南；方法参考保留更长的原始推理。只在相关问题出现时加载对应文件。下表说明实际适配位置，不是要求按表顺序执行。

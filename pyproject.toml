@@ -3,20 +3,23 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "open-scientist-local"
-version = "0.2.1"
-description = "Local research records and literature adapters for the Open Scientist Codex / Claude Code plugin"
+name = "open-scientist"
+version = "0.3.0"
+description = "Open Scientist: a question-driven research engine (Forge) with adaptive domain and task assets, for Claude Code and Codex"
 requires-python = ">=3.10"
 license = {text = "MIT AND Apache-2.0"}
-dependencies = ["pydantic>=2,<3", "mcp>=1.12,<2"]
+dependencies = []
 
 [project.optional-dependencies]
-mcp = ["mcp>=1.12,<2"]
-test = ["pytest>=8", "mcp>=1.12,<2"]
+test = ["pytest>=8"]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+include = ["forge*"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 130
+extend-exclude = ["vendor"]

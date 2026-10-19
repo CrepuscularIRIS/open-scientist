@@ -1,3 +1,5 @@
+> **0.2 reference.** 0.3's checks are the test suite (`pytest`) and the plugin validators; see [install](install.md) §4.
+
 # v0.1 验证记录
 
 日期：2026-10-17。验证对象是本目录源码包。下述证据分层保留；文件齐全、自动化测试通过、提示词回放和科研效果不是同一件事。
@@ -51,7 +53,7 @@ arXiv live probe在本次网络条件下返回timeout。适配器保留本地结
 
 ## [已核] 合成执行桥接
 
-[bridge_replay.py](../examples/bridge_replay.py) 实际执行微型Python程序并写入临时研究项目：
+bridge_replay.py (0.2 `examples/bridge_replay.py`, removed in 0.3; its scenario is `tests/test_study.py`) 实际执行微型Python程序并写入临时研究项目：
 
 1. 帧仍在但查询未命中：代码事实改变问题版本，保留旧材料。
 2. 合法反例与退出码7的运行失败分别保存：保留旧预测、H修订与新的未执行T。

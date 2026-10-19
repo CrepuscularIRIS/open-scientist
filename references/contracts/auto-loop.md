@@ -1,3 +1,5 @@
+> **0.2 historical contract.** Auto mode and its fixed acceptance list are superseded in 0.3 by the study loop ([design](../../docs/design.md) §5, [protocols](../protocols.md)). Kept so the 0.2 method texts that cite it stay readable.
+
 # 自动模式：有边界地推进到研究里程碑
 
 用户要求"自动研究 / 持续推进 / 直到交付"时使用。宿主 Agent 执行循环，`workflow` 记录保存检查点，`workflow_check` 判断是否达到交付标准。默认单 Agent；独立审查在需要时才分出。循环结构借鉴 Co-Scientist supervisor（解析目标 → 有界执行 → 每步后检查终止条件 → 收尾总览）和 PPT 的研究动作（ABDUCE → PROBE → GRILL → REPORT，新证据回到假设）。不引入 Elo、常驻进程或固定阶段文件。

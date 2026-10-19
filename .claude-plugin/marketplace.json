@@ -8,7 +8,7 @@
     {
       "name": "open-scientist",
       "source": "./",
-      "description": "Open Scientist research skills and the local research-records MCP server for Claude Code."
+      "description": "Open Scientist 0.3: the Forge study loop, skills, seat agents, Mod pane and the standard-library MCP server for Claude Code."
     }
   ]
 }

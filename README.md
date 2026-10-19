@@ -1,99 +1,83 @@
-# Open Scientist · Codex / Claude Code 插件 v0.2
+# Open Scientist 0.3 · Claude Code / Codex 科研插件
 
-将 ResearchStudio 的证据、机制构造与反例检查，Research Companion 的选题、跨域联想与投入判断，以及 Co-Scientist 的假设审查、演化与证据关系组织在同一套研究记录上。
+**按问题推进的科研引擎。** 研究从用户的问题、代码和论文出发。Agent 每次提出一个下一步动作，代码先核对它的材料、版本、授权和产出合同，通过后才写入共享记录。
 
-默认先做**能改变当前决定的最小行动**。不要求每次跑完整阶段、不强制多模型面板、不用 Card 长度或 Elo 代表研究质量。技能正文详细，方法与46张模式卡按需阅读。
+0.3 融合了四个来源：ResearchStudio、Research Companion、Co-Scientist 和 Open Scientist 0.2。设计原则是 **程序严格，资产自适应**：
+- 读文献、先计划后执行、原始结果留存、独立审查、硬下限、双通道碰撞检索，这些程序固定不变。
+- 领域卡、审稿期望、评审维度、测试协议、代码地图和检索计划，随领域与任务从证据重新生成。
+
+设计见 [docs/design.md](docs/design.md)，不变的程序见 [references/protocols.md](references/protocols.md)。
+
+## 和 0.2 的区别
+
+| 0.2 | 0.3 |
+|---|---|
+| 11 个技能各自推进，另有 auto-loop 与固定 7 项验收 | 一个 **study** 推进器：Agent 提议，代码检查，原有 11 个入口转发到它 |
+| 静态资产（RS 15+31 卡、Companion 7 维、Co 评分锚点）直接复用 | 静态资产只当 **种子**。每个 study 按需生成自己的资产，每条都标明证据；只靠种子的资产停留在 draft |
+| 不分任务类型 | 10 种任务类型变体（机制、理论、诊断、分析、基准、系统、实证发现、扩展规律、综述、复现）。基准与数据集任务在 RS 中不受支持，这里是一等任务 |
+| 测试由宿主自行执行，结果靠描述 | `run_test` 实际执行计划好的命令，记录 commit、退出码和带 hash 的 stdout/stderr。中断不算完成，也不会静默重跑 |
+| 记录层依赖 pydantic 和 mcp | 只用 **Python 标准库**：记录库、MCP 服务器和导航器都不需要安装依赖 |
+| RS 严格流水线不可用 | `build_domain`（RS 严格阅读流水线）与 `idea_run`（RS 严格 idea 链）作为 study 内的动作调用 |
 
 ## 先用起来
 
-同一目录同时是 Codex 插件和 Claude Code 插件，技能正文与 MCP 记录层共用。安装后调用总入口：
+```bash
+# Claude Code（从 GitHub 市场安装或更新）
+claude plugin marketplace add CrepuscularIRIS/open-scientist
+claude plugin install open-scientist@open-scientist-local     # 已装 0.2：claude plugin update open-scientist@open-scientist-local
+```
 
-| 宿主 | 调用方式 |
+在 Claude Code 里直接描述研究问题即可，例如“为什么 agent 跨会话丢记忆？先查代码里的原因”。`open-scientist` 技能会开一个 study 并逐步推进；`/open-scientist` 打开面板，`/config` 设置默认模式。Codex 的安装步骤见 [docs/install.md](docs/install.md)。
+
+也可以从命令行直接驱动：
+
+```bash
+python3 scripts/forge.py next --project "$PWD" --study memory-loss --goal "为什么 agent 跨会话丢记忆？"
+```
+
+## 研究怎样推进
+
+每一步都由 `forge next --study <slug>` 给出：
+1. **intake**：记录问题 `q`（用户原话与硬约束），并写下 **kit**：任务类型、交付物、首批需要的资产、每种任务类型对应的变体。
+2. **propose**：Agent 找出最可能改变下一个决定的未决问题，提出回答它的最便宜动作。动作有：
+   - 诊断代码或数据；
+   - 检索（先本地库）与阅读；
+   - 生成资产；
+   - 构造或演化机制；
+   - 一致性检查、碰撞检索、独立审查；
+   - 计划测试、执行测试、解读结果；
+   - 决定、汇报、问人；
+   - 调用 RS 严格流水线（`build_domain`、`idea_run`）。
+3. **check**：代码检查输入是否存在、版本是否最新、是否在授权内、前置条件是否满足、是不是无效重复。超出授权（训练、付费、外发数据、超预算）的转给人决定；免费检索不问。
+4. **commit**：动作产出先按合同校验，再写入记录库。
+5. **停止条件**：
+   - 交付物的完成条件满足后可以汇报，诊断类问题证实或推翻前提即可结束；
+   - 连续 3 个动作没有新信息就停下交给人；
+   - 排除一个解释、发现前提为假，都算进展。
+
+## 什么变，什么不变
+
+| 不变（程序） | 随领域 / 任务变（资产） |
 |---|---|
-| Codex | `$open-scientist:research-workflow` |
-| Claude Code | `/open-scientist:research-workflow`，或直接描述任务让技能自动触发 |
-
-```text
-用 research-workflow 检查这个研究项目。
-先读现有代码和失败样例，确定问题是否真实，再用本机论文库与 arXiv 补证据。
-不要默认开始训练；给出有区分力的下一步。
-```
-
-**自动模式**：给出交付目标和授权范围，总入口会持续推进到里程碑，而不是每做完一步就交回：
-
-```text
-/open-scientist:research-workflow 自动研究这个问题，记录写到当前项目。
-目标：交付一个经过文献、代码和反例检查的研究方案，含方法 Card、关键风险和最小判别实验。
-允许检索、读代码、运行廉价本地探测；不启动训练。一般缺口自行补齐，
-直到达到目标、无法取得有效进展，或需要我决定实质方向。
-```
-
-每个动作写一个 `workflow` 检查点：目标、验收项、预算、已做动作、待解决问题、下一动作。`workflow_check` 逐项核对验收项，未通过时后端拒绝写 done。重复的动作键会被拒绝，预算不能超过上限，中断后从检查点继续。协议见 [auto-loop](references/contracts/auto-loop.md)。Claude Code 中，GRILL 阶段可以调用自带的 `research-grill` 子 Agent，从召回、对手审查、对抗攻击三个视角做独立审查。
-
-已有明确任务可以直接调用 `research-retrieve`、`research-code`、`research-review` 等，不必绕回总入口。插件命名空间以宿主显示的 `open-scientist:...` 为准。
-
-Claude Code 可直接从 GitHub 安装：`claude plugin marketplace add CrepuscularIRIS/open-scientist`，再 `claude plugin install open-scientist@open-scientist-local`。完整安装步骤见 [安装与验证](docs/install.md)。这是本地插件源码包；没有自动更改你的全局插件配置、发布到公共目录或替换三个原仓库。
-
-## 十一个入口
-
-| Skill | 解决什么问题 | 常见交回产物 |
-|---|---|---|
-| [research-workflow](skills/research-workflow/SKILL.md) | 开始、恢复与选择下一研究行动 | 当前问题/证据/未知/下一动作 |
-| [research-retrieve](skills/research-retrieve/SKILL.md) | 本机论文库＋arXiv、全文阅读、增量查证 | 查询覆盖、原文、主张对应关系 |
-| [research-diagnose](skills/research-diagnose/SKILL.md) | 瓶颈是否真实、哪项前提失效 | 失败条件、替代解释与问题版本 |
-| [research-ideate](skills/research-ideate/SKILL.md) | 跨领域机制、前提挑战、新方向 | 有操作映射和断点的候选 |
-| [research-construct](skills/research-construct/SKILL.md) | 将候选写成可查、可试的机制 | 观测模型、步骤、主张与预测 |
-| [research-code](skills/research-code/SKILL.md) | 代码、数据、评测与环境是否支持前提 | 实际调用链与信息可用性 |
-| [research-test](skills/research-test/SKILL.md) | 最小判别实验与执行反例 | 计划、运行材料、结果分类 |
-| [research-review](skills/research-review/SKILL.md) | 机制、查新、来源、反例与修订审查 | 有对象和证据的 finding |
-| [research-evolve](skills/research-evolve/SKILL.md) | 按具体缺陷组合、简化、改测试或重构 | Q/H/T 的明确变化与局部重检 |
-| [research-report](skills/research-report/SKILL.md) | Card、规格、质量诊断与项目汇总 | 同一版本的可读视图 |
-| [research-decide](skills/research-decide/SKILL.md) | 继续、修改、搁置、停止及重访 | 投入决定、理由、下一观察 |
-
-## 交互比阶段更重要
-
-```mermaid
-flowchart LR
-    Q[问题与约束] --> D[诊断]
-    L[论文与原始来源] <--> D
-    C[代码与数据事实] <--> D
-    D <--> I[跨域联想与机制构造]
-    I <--> T[测试与审查]
-    T -->|问题前提失效| D
-    T -->|缺少信号或机制缺陷| I
-    I <--> V[Card与规格]
-    T <--> V
-    V -->|新增规格或证据缺口| C
-    T --> A[投入决定与恢复条件]
-    D --> A
-    A --> Q
-```
-
-[32条桥接目录](references/contracts/bridges.md) 给出每次调用的时机、输入、回流与停止条件。Companion 不只反哺 Phase0；代码发现、反例、可行性、Card与反馈都能重新定向某一局部工作。
-
-## 详细内容怎样保留
-
-- **技能层**：入口触发、输入、具体推理步骤、输出、分支、停止条件与案例。
-- **方法层**：[methods](docs/skill-map.md) 保留并适配 RS 的长提示词、Companion角色问法与 Co 的审查/演化方法。解除旧宿主路径、固定人数/阶段/预算和不合理门禁。
-- **模式资产**：[15主模式＋31子模式](references/patterns/INDEX.md) 完整保留原文，按触发问题和用途索引。允许零张或一张，不强制组合，不把历史录用教训当普适定律。
-- **保真归档**：[vendor](vendor/README.md) 保存110个原文件及其原始字节；[manifest](docs/source-manifest.json) 记录源commit、dirty状态、SHA-256与许可。归档指令不直接执行。
-
-用户可选 [方向](references/templates/direction-card.md)、[构造](references/templates/construction-card.md)、[挑战](references/templates/challenge-card.md)、[执行](references/templates/execution-card.md)、[决定](references/templates/decision-card.md) 视图；无需每次生成五份。Card 不是另一套科研事实库。
+| 先读后引；只有全文读过、代码检查过或实际执行过的材料，才能支持判断 | 领域：领域卡、审稿期望（带 `applies_when`）、基线、碰撞词表与时间窗、跨域映射、反模式统计 |
+| 先计划后执行；对手解释必须预测出不同的观察结果 | 任务：评审维度、测试协议、交付标准、检索计划 |
+| 原始结果留存；执行结果分类解读 | 项目：代码地图、运行环境、研究者画像 |
+| Q/H/T 版本化；基于旧版本的提议被拒 | 审查通过前，资产不得标为 checked |
+| 独立审查；硬下限；双通道碰撞检索 | — |
+| 演化不原地修改，每个算子有对应约束；用户授权上限不可由步骤提高 | — |
 
 ## 共享记录与工具
 
-五类记录是 project、candidate、material、activity、assessment。问题 Q、机制 H、测试 T 各自可以改变；旧结果与反证保留。通过6个本地MCP工具（5个记录工具加 `workflow_check`）或同一CLI访问，见 [记录API](docs/record-api.md)。
-
-MCP只做保存、读取、版本、上下文和验收检查，不启动训练、调用模型或调度后台研究；自动模式的循环由宿主 Agent 执行。宿主 Agent 负责实际读代码、查来源、执行获授权的测试并解释结果。它不自动保证“写入的主张为真”，也不自动生成盲审上下文。
-
-检索使用只读SQLite FTS5及arXiv公开关键词接口，见 [检索说明](docs/search-adapter.md)。不复制论文库、不自动建索引、不需要Semantic Scholar/OpenAlex密钥。两源状态分别保存；本地空结果和远端不可达不能变成“新颖性高”。
+- **记录**：每个 study 一个库，位于 `<project>/.forge/studies/<slug>/records.sqlite3`，只追加、带版本、精确引用 `{id, version}`。语义沿用 0.2 的 project / candidate / material / activity / assessment。0.2 的记录用 `forge records import` 导入为只读档案，只作历史阅读，不算证据。
+- **MCP 服务器** `open-scientist`（标准库实现）：提供 `forge_next`、`records_context|get|list|history`、`papers_search`。没有写入工具，写入只能经过 study 的 commit。
+- **本地论文库**：读取 `PAPER_SEARCH_LOCAL_DB`（默认 `/data/paper_index/local_papers.db`），只读，先本地后 arXiv。说明见 [docs/search-adapter.md](docs/search-adapter.md)。
+- **OpenReview 投稿结果与评审文本**（可选）：见 [docs/openreview-labels.md](docs/openreview-labels.md)。
 
 ## 验证与局限
 
-[验证记录](docs/validation.md) 区分资产保真、代码测试、真实MCP通信、本机检索、合成桥接演示和文本场景检查。它们不等于已证明科研产出质量提升。
-
-本版不迁入Co常驻supervisor/Elo/向量聚类，不迁入RS固定阶段控制器，也不把Reel海报视频生产放进科研默认路径。后续是否需要这些功能，应由真实使用收益决定。
+- **已覆盖**：`pytest` 覆盖 study 推进器的全部门禁（错误前提被实际执行的探针纠正、中断不重跑、不可判别的计划被拒、授权、无进展停止、资产证据规则、RS 严格链内嵌与吸收），以及 0.2 的记录、检索和 OpenReview 测试。`claude plugin validate` 和 `claude plugin test` 通过。
+- **尚未验证**：在真实课题上的科研效果还没有评估。校验器检查结构、来源、版本与改动范围，不判断机制好坏，那是独立审查的工作，审查也可能出错。执行者记录来自宿主自报，不是身份认证。Agent 与这些文件在同一台机器上：手改策略、kit、批准、执行记录或提交标记会让 study 停下并报出来；但如果有人直接改写记录数据库，这些校验拦不住，只能让篡改更难、更显眼。
 
 ## 许可
 
-新增胶水代码和文档使用 [MIT](LICENSE)。ResearchStudio、Research Companion 原资产保留各自MIT版权文本，Co-Scientist原资产与派生内容保留Apache-2.0义务，见 [第三方声明](THIRD_PARTY_NOTICES.md)。原论文内容与数据库没有随包分发。
+MIT 与 Apache-2.0。来源与改编说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

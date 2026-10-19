@@ -1,0 +1,16 @@
+{
+  "name": "research-process-pilot",
+  "start_date": "2018-01-01",
+  "end_date": "2026-10-18",
+  "page_size": 10,
+  "queries": [
+    {"id": "research-agents", "lane": "in_domain", "domain": "automated scientific research",
+     "search_query": "ti:\"AI scientist\" OR ti:\"co-scientist\" OR ti:\"ResearchAgent\"", "max_results": 10},
+    {"id": "idea-generation", "lane": "in_domain", "domain": "research idea generation",
+     "search_query": "ti:\"research ideas\" AND (abs:\"language models\" OR abs:\"LLM\")", "max_results": 10},
+    {"id": "cross-literature-discovery", "lane": "cross_domain", "domain": "literature-based discovery and analogy",
+     "search_query": "ti:\"literature-based discovery\" OR (ti:\"scientific discovery\" AND abs:\"analogy\")", "max_results": 10},
+    {"id": "cross-peer-review", "lane": "cross_domain", "domain": "peer review and metascience",
+     "search_query": "ti:\"PeerRead\" OR (ti:\"peer review\" AND abs:\"dataset\")", "max_results": 10}
+  ]
+}

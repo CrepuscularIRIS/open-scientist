@@ -1,20 +1,36 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "open-scientist",
-  "version": "0.2.1",
-  "description": "Evidence-grounded research: literature and code, problem discovery, mechanism construction, testing, review and decisions.",
+  "version": "0.3.0",
+  "description": "Question-driven research engine: local papers + arXiv, code and data diagnosis, adaptive domain and task assets (cards, expectations, rubric, test protocol), executed discriminating tests, independent review and decisions on versioned shared records. Strict ResearchStudio procedures, adaptive knowledge.",
   "license": "MIT AND Apache-2.0",
-  "keywords": ["research", "science", "local-papers", "arxiv", "evidence"],
+  "keywords": [
+    "research",
+    "science",
+    "local-papers",
+    "arxiv",
+    "evidence",
+    "domain-adaptation",
+    "mcp"
+  ],
   "extensions": {
     "com.openai": {
       "requires_local_executor": true,
       "interface": {
         "displayName": "Open Scientist",
         "shortDescription": "从论文、代码和实验形成可核查的科研判断",
-        "longDescription": "融合 ResearchStudio、Research Companion 与 Co-Scientist 的研究方法，按当前问题调用技能，以版本化记录保留证据、反例和决定。默认检索本机论文库与 arXiv。",
+        "longDescription": "融合 ResearchStudio、Research Companion、Co-Scientist 与 Open Scientist 0.2：研究按问题推进，每一步由代码核对材料、版本与授权；领域卡、审稿期望、评审维度与测试协议随领域和任务重新生成，读文献、先计划后执行、原始结果留存、独立审查等程序保持严格。默认先检索本机论文库，再查 arXiv。",
         "category": "Productivity",
-        "capabilities": ["Interactive", "Read", "Write"],
-        "defaultPrompt": ["用 $research-workflow 从当前项目的问题、代码和文献开始研究。", "用 $research-review 核查这个想法的关键前提与反例。", "用 $research-report 生成一张简洁但有证据的 idea card。"],
+        "capabilities": [
+          "Interactive",
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "用 $open-scientist 从当前项目的问题、代码和文献开始一个研究 study。",
+          "用 $open-scientist 核查这个问题的前提是否真实，再决定下一步。",
+          "用 $open-scientist 为这个领域建立领域卡和审稿期望，然后生成 idea card。"
+        ],
         "brandColor": "#185E65"
       }
     }

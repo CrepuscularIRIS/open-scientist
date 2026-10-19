@@ -1,3 +1,5 @@
+> **0.2 reference.** 0.3 keeps these record semantics in a standard-library store; writes go through study commits ([contracts](../prompts/study/contracts.md)), and the MCP server is read-only.
+
 # Shared-record API
 
 All tools require an explicit absolute `project_root` pointing to an existing

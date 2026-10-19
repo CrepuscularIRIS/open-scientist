@@ -16,7 +16,7 @@ from urllib.error import HTTPError, URLError
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE = ROOT / "src/open_scientist/search.py"
+MODULE = ROOT / "forge/search.py"
 ATOM = b'''<feed xmlns="http://www.w3.org/2005/Atom"
  xmlns:arxiv="http://arxiv.org/schemas/atom"
  xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
