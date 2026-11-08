@@ -1,8 +1,17 @@
 {
   "name": "open-scientist",
-  "version": "0.4.0",
-  "description": "ResearchStudio idea_spark as the backbone (retrieval, bottleneck diagnosis, generation, gauntlet, idea card) with research-taste selection layers around it: innovation-lens (15 innovation types) after Phase 0, gap-code-filter (code-grounded unnecessary assumptions + offline oracle admission) after Phase 1, problem-selection (risk table, likelihood x impact, go/no-go; from Anthropic's scientific-problem-selection) after Phase 3, and a three-bottleneck mainline for journal method papers.",
-  "author": {"name": "CrepuscularIRIS"},
+  "version": "0.5.0",
+  "description": "ResearchStudio idea_spark as the backbone (retrieval, bottleneck diagnosis, generation, gauntlet, idea card), with a mainline-first formulation after Phase 0 (blind first pass + crux validation: one mainline, at most two causally linked branches) and an independent soundness gate (verifier agent: KILL / CHECK / PASS against the project's code and measured facts) after Phase 1 for gaps and after Phase 3 for cards, so ideas die before training. Problem-selection (from Anthropic's scientific-problem-selection) only ranks what passed.",
+  "author": {
+    "name": "CrepuscularIRIS"
+  },
   "license": "MIT AND Apache-2.0",
-  "keywords": ["research", "idea-generation", "problem-selection", "researchstudio", "method-paper"]
+  "keywords": [
+    "research",
+    "idea-generation",
+    "problem-formulation",
+    "soundness",
+    "researchstudio",
+    "method-paper"
+  ]
 }

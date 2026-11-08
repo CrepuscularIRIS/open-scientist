@@ -1,6 +1,6 @@
 ---
 name: problem-selection
-description: Rank research cards and candidate methods, decide go / no-go and the first falsifying experiment, and get unstuck — the problem-choice layer of Open Scientist 0.4, distilled from Anthropic's scientific-problem-selection skill (Fischbach & Walsh, Cell 2024). Use after IdeaSpark Phase 3 (os_next emits it before Phase 4), when several cards or methods compete, when defining what a project optimises before Phase 0, or when an experiment line is stuck.
+description: Rank research cards and candidate methods, decide go / no-go and the first falsifying experiment, and get unstuck — the problem-choice layer of Open Scientist 0.5 — applied only to cards that PASSED the soundness gate, distilled from Anthropic's scientific-problem-selection skill (Fischbach & Walsh, Cell 2024). Use after IdeaSpark Phase 3 (os_next emits it before Phase 4), when several cards or methods compete, when defining what a project optimises before Phase 0, or when an experiment line is stuck.
 ---
 
 # 选题与选法（problem-selection）
@@ -18,6 +18,7 @@ description: Rank research cards and candidate methods, decide go / no-go and th
 | 卡住时 | **问题反转**（`07-problem-inversion.md`） | 三种转法：① 放开一个原本被固定的参数；② 原目标做不到时，换成同等价值的目标；③ 拿到的答案回答的不是原问题时，反问"数据回答了哪个问题" |
 
 ## Phase 3 之后的流程（产物 `selection.zh.md` + `selection.json`）
+0. **只排 PASS 的卡**：输入是 `soundness_cards.json` 的 `kept`；KILL / unresolved 的卡不进排序。风险表的"现象假设"直接引用验证器的 S1–S4 证据，不重新打分。"影响"按是否作用在 `mainline.md` 的主线上判断：主线 > 支线 > 其他。
 1. **列出所有候选**：本轮的卡（`final_candidate.json` 或 `refined_candidate.json`），以及项目里其他在册的卡和候选方法（`<project>/.open-scientist/mainline.md`）。
 2. **每张卡的假设表**：对每个关键假设打 1–5 分（1 是 >90% 把握，5 是 <10%），分清"现象假设"和"技术可行性假设"，注明是否已有实测或离线准入。
    - 两个以上 4–5 分的假设属于"多个奇迹"，要么回避，要么先做细化。

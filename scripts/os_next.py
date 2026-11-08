@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Open Scientist 0.4 navigator: ResearchStudio idea_spark is the backbone; selection layers are inserted around it.
+"""Open Scientist 0.5 navigator: ResearchStudio idea_spark is the backbone; mainline-first + soundness layers around it.
 
 It runs the bundled RS navigator (`skills/idea-spark/scripts/run.py next`) and looks at the step RS wants next. When
 RS is about to start a phase whose selection layer has not been completed for this run, it emits the layer step
 instead; otherwise it passes the RS step through, adding the layer outputs as extra inputs where RS should read them.
 
-  RS wants "Phase 1 — bottleneck identification"  and phase0/innovation_lens.json is missing -> innovation-lens
-  RS wants "Phase 2.1 + 2.2"                     and phase1/.gap_filter_done is missing    -> gap-code-filter
-  RS wants "Phase 4 skeleton"                    and selection.json is missing             -> problem-selection
+  RS wants "Phase 1 — bottleneck identification"  and phase0/mainline_first.json is missing -> mainline (blind pass + crux)
+  RS wants "Phase 2.1 + 2.2"                     and phase1/.gap_filter_done is missing   -> soundness-gate (gap level)
+  RS wants "Phase 4 skeleton"                    and soundness_cards.json is missing      -> soundness-gate (card level)
+  RS wants "Phase 4 skeleton"                    and selection.json is missing            -> problem-selection (PASS cards)
+  innovation-lens and gap-code-filter are optional tools in 0.5 (not emitted).
   (state-free, idempotent: completion = the marker file; re-run any time)
 
 Usage: python3 scripts/os_next.py --dir <run_dir> [--query "..."] [--project <project root>]
@@ -25,40 +27,51 @@ ROOT = Path(__file__).resolve().parents[1]
 RS = ROOT / "skills" / "idea-spark" / "scripts" / "run.py"
 BAR = "━" * 72
 
-LAYERS = {
-    "lens": {
+LAYERS = {  # checked in this order; the first unmet layer whose trigger matches is emitted
+    "mainline": {
         "trigger": "Phase 1 — bottleneck identification",
-        "marker": lambda run: run / "phase0" / "innovation_lens.json",
-        "skill": "innovation-lens",
-        "title": "Open Scientist layer — innovation lens (15 innovation types A–O, ranked) BEFORE Phase 1",
+        "marker": lambda run: run / "phase0" / "mainline_first.json",
+        "skill": "mainline",
+        "title": "Open Scientist layer — mainline-first formulation (blind first pass + crux validation) BEFORE Phase 1",
         "inputs": lambda run, proj: [run / "phase0" / "user_query.txt", run / "phase0" / "lit_table.md",
-                                      proj / ".open-scientist" / "mainline.md", proj / ".open-scientist" / "facts.md"],
-        "outputs": lambda run: [run / "phase0" / "innovation_lens.zh.md", run / "phase0" / "innovation_lens.json"],
+                                      proj / ".open-scientist" / "mainline.md", proj / ".open-scientist" / "facts.md",
+                                      proj / ".open-scientist" / "code_map.md"],
+        "outputs": lambda run: [run / "phase0" / "mainline_first.json"],
     },
-    "filter": {
+    "gaps": {
         "trigger": "Phase 2.1 + 2.2",
         "marker": lambda run: run / "phase1" / ".gap_filter_done",
-        "skill": "gap-code-filter",
-        "title": "Open Scientist layer — gap code filter + design layer BEFORE Phase 2",
-        "inputs": lambda run, proj: [run / "phase1" / "phase1_output.json", run / "phase0" / "innovation_lens.json",
+        "skill": "soundness-gate",
+        "title": "Open Scientist layer — soundness gate, GAP level (independent verifier: KILL / CHECK / PASS) BEFORE Phase 2",
+        "inputs": lambda run, proj: [run / "phase1" / "phase1_output.json", run / "phase0" / "mainline_first.json",
                                       proj / ".open-scientist" / "code_map.md", proj / ".open-scientist" / "facts.md"],
-        "outputs": lambda run: [run / "phase1" / "phase1_output.json (gap list rewritten; original kept as *_unfiltered)",
-                                run / "phase1" / "ASSUMPTIONS.zh.md", run / "phase1" / ".gap_filter_done"],
+        "outputs": lambda run: [run / "phase1" / "phase1_output.json (gap list: kept gaps only, mainline first; original kept as *_unfiltered)",
+                                run / "phase1" / "soundness_gaps.json", run / "phase1" / ".gap_filter_done"],
+    },
+    "cards": {
+        "trigger": "Phase 4 skeleton",
+        "marker": lambda run: run / "soundness_cards.json",
+        "skill": "soundness-gate",
+        "title": "Open Scientist layer — soundness gate, CARD level (kill before training) BEFORE Phase 4",
+        "inputs": lambda run, proj: [run / "phase3_revise" / "final_candidate.json", run / "phase2_coherence" / "refined_candidate.json",
+                                      run / "phase2_generate" / "phase2_generate_output.json", run / "phase0" / "mainline_first.json",
+                                      proj / ".open-scientist" / "mainline.md", proj / ".open-scientist" / "code_map.md",
+                                      proj / ".open-scientist" / "facts.md"],
+        "outputs": lambda run: [run / "soundness_cards.json"],
     },
     "select": {
         "trigger": "Phase 4 skeleton",
         "marker": lambda run: run / "selection.json",
         "skill": "problem-selection",
-        "title": "Open Scientist layer — problem selection (risk table, likelihood × impact, go / no-go) BEFORE Phase 4",
-        "inputs": lambda run, proj: [run / "phase3_revise" / "final_candidate.json", run / "phase2_coherence" / "refined_candidate.json",
-                                      run / "phase2_generate" / "phase2_generate_output.json", run / "phase3_critique" / "phase3_critique_output.json",
+        "title": "Open Scientist layer — problem selection over PASS cards only (likelihood × impact on the mainline) BEFORE Phase 4",
+        "inputs": lambda run, proj: [run / "soundness_cards.json", run / "phase3_critique" / "phase3_critique_output.json",
                                       proj / ".open-scientist" / "mainline.md"],
         "outputs": lambda run: [run / "selection.zh.md", run / "selection.json"],
     },
 }
 EXTRA_INPUTS = {  # RS steps that must also read a layer output
-    "Phase 1 — bottleneck identification": lambda run: [run / "phase0" / "innovation_lens.json"],
-    "Phase 2.1 + 2.2": lambda run: [run / "phase0" / "innovation_lens.json", run / "phase1" / "ASSUMPTIONS.zh.md"],
+    "Phase 1 — bottleneck identification": lambda run: [run / "phase0" / "mainline_first.json"],
+    "Phase 2.1 + 2.2": lambda run: [run / "phase0" / "mainline_first.json", run / "phase1" / "soundness_gaps.json"],
 }
 
 

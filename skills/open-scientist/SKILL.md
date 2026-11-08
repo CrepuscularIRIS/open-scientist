@@ -1,51 +1,55 @@
 ---
 name: open-scientist
-description: Orchestrator for research idea generation and selection (Open Scientist 0.4). ResearchStudio idea_spark is the backbone (retrieval, bottleneck diagnosis, generation, gauntlet, card); research-taste selection layers are inserted around it — innovation-lens after Phase 0, gap-code-filter after Phase 1, problem-selection after Phase 3 — plus a three-bottleneck mainline for journal method papers. Use when the user wants to pick a research direction, draw an idea card, rank candidate methods or cards, or continue an IdeaSpark run with the selection layers.
+description: Orchestrator for research idea generation and selection (Open Scientist 0.5). ResearchStudio idea_spark is the backbone (retrieval, bottleneck diagnosis, generation, gauntlet, card). Around it — a mainline-first formulation after Phase 0 (blind first pass + crux validation, one mainline plus at most two causally linked branches), and an independent soundness gate (verifier agent, KILL / CHECK / PASS) after Phase 1 for gaps and after Phase 3 for cards, so ideas die before training; methodology (problem-selection) only ranks what passed. Use when the user wants to pick a research direction, draw an idea card, rank candidate methods or cards, or continue an IdeaSpark run.
 ---
 
-# Open Scientist 0.4：RS 出卡 + 方法论选择
+# Open Scientist 0.5：RS 出卡 + 主线优先 + soundness 门
 
-**一句话**：ResearchStudio（RS）的 idea_spark 负责工程推导：检索、诊断、生成、审查、写卡。Open Scientist 在 RS 的阶段之间插入**选择层**，把 research taste 显式化，避免每轮由 AI 随意挑选方向。
-- **来源**：ResearchStudio（MIT）、Anthropic life-sciences 的 scientific-problem-selection（Apache-2.0，基于 Fischbach & Walsh, Cell 2024），以及我们自己的方法论。
-- **不再包含**：0.3 的 Forge 引擎、Research Companion、Co-Scientist、类比推理。
+**一句话**：ResearchStudio（RS）的 idea_spark 负责生成（检索、诊断、生成、审查、写卡）。Open Scientist 只做两件事：
+1. **主线优先**：在诊断之前，先独立找出限制目标的**一条主线**，其余问题作为与它因果相连的支线（≤2）；
+2. **soundness 门**：一个独立的验证器 agent 对每条 gap、每张卡打分并判决 KILL / CHECK / PASS，**在训练之前杀 idea**。
 
-## 驱动方式
+方法论（problem-selection 的风险表、innovation-lens 的 15 种类型）退为**筛选和排序**，只作用于通过 soundness 门的条目。
+
+## 驱动
 ```bash
 python3 "<plugin>/scripts/os_next.py" --dir "$PWD/ideaspark_run/<slug>" --project "$PWD" [--query "<研究问题>"]
 ```
-- `os_next` 会先调用 RS 的 `run.py next`。
-  - 如果 RS 要进入下一阶段，而这一轮还没过对应的选择层，就先输出选择层这一步，`TYPE: open_scientist_layer`；
-  - 否则原样输出 RS 的步骤。需要额外读选择层产物时，在后面附一行 `OPEN-SCIENTIST:`。
-- 照输出逐步执行：
-  - `bash`：照跑；
-  - `llm_subagent`：派隔离的 sub-agent，只传文件路径，输出写盘；
-  - `open_scientist_layer`：按对应 skill 执行，写出标记文件后再运行 `os_next`。
-- RS 自身的规则不变（见 `skills/idea-spark/SKILL.md`，尤其是 Context discipline），例如每个 LLM 阶段一个隔离 context、不在父上下文粘贴大文件。
+照输出逐步执行：`bash` 照跑；`llm_subagent` 派隔离 sub-agent，只传文件路径；`open_scientist_layer` 按对应 skill 执行，写出完成标记后再跑 `os_next`。RS 自身的规则不变（`skills/idea-spark/SKILL.md`，尤其 Context discipline）。
 
 ## 阶段地图
-| 位置 | 层 | 产物 / 完成标记 |
+| 位置 | 层 | 谁执行 | 产物 / 完成标记 |
+|---|---|---|---|
+| Phase 0 之前 | 写 query：包含 `facts.md` 的实测事实 | 主会话 | `phase0/user_query.txt` |
+| RS Phase 0 | 检索、分区、补漏、全文 | RS | `phase0/` |
+| **Phase 0 → 1** | `mainline`：盲测首轮（不看我们的 claim）→ Crux 校验（对照我们的 claim） | 两个隔离 Opus sub-agent | `phase0/mainline_first.json` |
+| RS Phase 1 | 瓶颈诊断；gap 标主线 / 支线 | RS | `phase1/phase1_output.json` |
+| **Phase 1 → 2** | `soundness-gate`（gap 级） | 验证器 agent（Sol），每条 gap 一次 | `phase1/soundness_gaps.json`、`phase1/.gap_filter_done` |
+| RS Phase 2 / 3 | 选择 → 生成 → 一致性 → 碰撞 → 审查 → 修订 | RS | `phase2_*`、`phase3_*` |
+| **Phase 3 → 4** | `soundness-gate`（卡级），再 `problem-selection` 只给 PASS 的卡排序 | 验证器 agent；主会话 | `soundness_cards.json`、`selection.json` |
+| RS Phase 4 | 写卡（可以先做实验后写卡） | RS | `phase4/` |
+
+## 分工
+| 角色 | 只做 | 不做 |
 |---|---|---|
-| Phase 0 之前 | `mainline`（三瓶颈主线）+ `problem-selection` 的目标函数与参数策略 | `<project>/.open-scientist/mainline.md`；RS 的 query 必须包含 `facts.md` 里的实测事实 |
-| RS Phase 0 | 检索：arXiv + OpenReview + 本地库，Phase 0.4 分区，0.5 补漏，全文抓取 | `phase0/` |
-| **Phase 0 → 1** | `innovation-lens`：15 种创新类型 A–O（5 族），按瓶颈排序 | `phase0/innovation_lens.json` |
-| RS Phase 1 | 瓶颈诊断，读 lens 的排序 | `phase1/phase1_output.json` |
-| **Phase 1 → 2** | `gap-code-filter`：gap 对到代码行，判断哪些是"默认但不必要的假设"；实测 + 离线 oracle 准入；设计层"15 种 ideation 模式 × 代码"，按 lens 的顺序展开；改写 gap 列表 | `phase1/ASSUMPTIONS.zh.md`、`phase1/.gap_filter_done` |
-| RS Phase 2 / 3 | 2.1 选择（以 lens 和设计表为优先级）→ 2.2 生成 → 2.3 一致性 → 3.1 碰撞 → 3.2 审查 → 3.3 修订 / 重试 | `phase2_*`、`phase3_*` |
-| **Phase 3 → 4** | `problem-selection`：假设风险表（1–5，go / no-go），成功概率 × 影响；在本轮的卡和同一项目的其他卡之间排序，定下第一个证伪实验 | `selection.json` |
-| RS Phase 4 | 写卡（用户可以选择先做实验、后写卡） | `phase4/` |
-| 执行中卡住 | `problem-selection` 的决策树和问题反转（放开一个固定参数，或换成同等价值的目标） | 写进项目记录 |
+| RS（Opus 隔离 sub-agent） | 生成 claim / 卡 | 判断 soundness |
+| 主线表述（两个 Opus 隔离 sub-agent） | 一条主线 + ≤2 支线、反事实检验 | 无证据时改主线；追问"更本质" |
+| **soundness-verifier**（`agents/soundness-verifier.md`，Sol） | 读代码 + 事实 + artifact，打分，判决 | 提新点子、改写 claim |
+| 主会话 | 写代码、跑离线检查和实验、维护 facts、机械聚合判决 | 推翻验证器的判决（只有新证据能） |
+| 用户 | 定目标，批准训练预算、真机、发布 | — |
 
 ## 规则
-- **选择层只排序、筛选、准入**，不替代 RS 的生成和审查，也不替代实验。
-- **RS 是核心**：每个实验都必须追溯到某个 RS run 的卡，或该 run 经过过滤的 gap 列表，实验记录里写明 run 目录和卡号。选择层不自己立项（离线准入审计属于过滤，可以直接做）。RS 之外得到的结果只作为实测事实写进 `facts.md`，供下一轮 RS 的 query 使用。
-- gap-code-filter 只删和留 RS 提出的 gap，不新增；Phase 2.1 的 gap × 模式组合仍由 RS 挑，lens 只给优先级。
-- 问题必须真实存在，有实测或最小实验支撑；不从方法反推问题；不为凑一个"高级"类型去编问题；证据保守，混杂和评测伪影照实写。
-- 只在本项目自选设置下才出现的现象（例如只在某个剂量或协议下）要照实标注，只能作佐证。
-- 离线审计不用等用户批准；训练超过项目规定的预算、真机实验、commit / PR，要先问用户。
-- 项目专属的内容放在 `<project>/.open-scientist/`（模板见插件的 `templates/.open-scientist/`），不写进插件：
-  - `mainline.md`：主线与候选瓶颈；
-  - `facts.md`：实测事实；
-  - `code_map.md`：代码地图与常见的默认假设。
+- **RS 是核心**：每个实验都追溯到某个 RS run 的卡或经过 soundness 门的 gap 列表。各层不自己立项，只删除和排序。
+- **KILL 的不训**：PASS 直接开跑；CHECK 先做验证器指定的那一个离线检查（≤ 1 h）再重判，仍无 0 分 → 允许一次单跑定对错。
+- **主线只在新证据推翻时改**，改动写进 `mainline.md` 的变更记录。
+- **回测验证器**：每个实验结束，把结果与当时的判决对比，记进 `<project>/.open-scientist/verifier_log.md`。
+- 问题必须真实存在、有实测；不从方法反推问题；证据保守，混杂和评测伪影照实写。
+- 离线检查不用等用户；超过项目训练预算、真机、commit / PR / 发布要先问用户。
+- 项目专属内容放在 `<project>/.open-scientist/`（模板见 `templates/.open-scientist/`）：`mainline.md`、`facts.md`、`code_map.md`、`verifier_log.md`。
+
+## 可选工具（0.5 起不由 os_next 发出）
+- `innovation-lens`：15 种创新类型，给已通过的方向打标签、做次级排序；
+- `gap-code-filter`：手动做"默认但不必要的假设"四元组和"15 种模式 × 代码"设计表。其代码对照部分已并入验证器的 S3。
 
 ## 自检
-`python3 scripts/selftest_os_next.py <一个已完成的 RS run 目录>`：检查 5 个阶段转换，即 lens → Phase 1 → filter → Phase 2 → selection。
+`python3 scripts/selftest_os_next.py <一个已完成的 RS run 目录>`：检查 6 个阶段转换（mainline → Phase 1 → gap 门 → Phase 2 → 卡门 → selection）。

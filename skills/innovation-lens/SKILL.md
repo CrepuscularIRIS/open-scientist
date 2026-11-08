@@ -1,6 +1,6 @@
 ---
 name: innovation-lens
-description: Research-taste layer between IdeaSpark Phase 0 and Phase 1 (user, 2026-11-07). After the literature pool (lit_table.md) exists and BEFORE bottleneck diagnosis, run the 15 innovation types (A–O, grouped into 5 families) over the mainline bottlenecks and our measured facts, to confirm or adjust the mainline and to produce a RANKED list of lenses. Phase 1 and the Phase 2.1 selection then use that ranking instead of letting the model pick patterns ad hoc. Use whenever an IdeaSpark run reaches the end of Phase 0 (os_next emits this layer), when choosing or re-checking the paper mainline, or when the user asks which kind of contribution or "research taste" a direction has.
+description: OPTIONAL in Open Scientist 0.5 (no longer emitted by os_next; the mainline layer replaced it at Phase 0 → 1). Research-taste tagging tool. After the literature pool (lit_table.md) exists and BEFORE bottleneck diagnosis, run the 15 innovation types (A–O, grouped into 5 families) over the mainline bottlenecks and our measured facts, to confirm or adjust the mainline and to produce a RANKED list of lenses. Phase 1 and the Phase 2.1 selection then use that ranking instead of letting the model pick patterns ad hoc. Use whenever an IdeaSpark run reaches the end of Phase 0 (os_next emits this layer), when choosing or re-checking the paper mainline, or when the user asks which kind of contribution or "research taste" a direction has.
 ---
 
 # 创新类型透镜（IdeaSpark Phase 0 → [本层] → Phase 1）

@@ -2,8 +2,8 @@
 """Self-test of os_next.py on synthetic run directories built from a real finished RS run.
 
 Usage: python3 scripts/selftest_os_next.py <a finished RS run dir (has phase0, phase1, phase2_*, phase3_*)>
-Checks: Phase 0 only -> innovation-lens layer; + lens marker -> RS Phase 1 with the extra input line;
-phase1 present -> gap-code-filter layer; + filter marker -> RS Phase 2 step; Phase 3 passed -> problem-selection layer.
+Checks: Phase 0 only -> mainline layer; + marker -> RS Phase 1 with the extra input line; phase1 present -> gap soundness
+layer; + marker -> RS Phase 2; Phase 3 passed -> card soundness layer; + marker -> problem-selection layer.
 """
 
 from __future__ import annotations
@@ -29,16 +29,17 @@ def main() -> int:
         run.mkdir()
         shutil.copytree(src / "phase0", run / "phase0")
         out = nav(run)
-        ok &= "innovation-lens" in out and "open_scientist_layer" in out
-        print("phase0 only -> lens layer:", "innovation-lens" in out)
-        (run / "phase0" / "innovation_lens.json").write_text("{}")
+        ok &= "mainline-first" in out and "open_scientist_layer" in out
+        print("phase0 only -> mainline layer:", "mainline-first" in out)
+        (run / "phase0" / "mainline_first.json").write_text("{}")
         out = nav(run)
-        ok &= "Phase 1" in out and "innovation_lens.json" in out and "open_scientist_layer" not in out
-        print("lens done -> RS Phase 1 + extra input:", "Phase 1" in out and "OPEN-SCIENTIST" in out)
+        ok &= "Phase 1" in out and "mainline_first.json" in out and "open_scientist_layer" not in out
+        print("mainline done -> RS Phase 1 + extra input:", "Phase 1" in out and "OPEN-SCIENTIST" in out)
         shutil.copytree(src / "phase1", run / "phase1")
+        (run / "phase1" / ".gap_filter_done").unlink(missing_ok=True)
         out = nav(run)
-        ok &= "gap-code-filter" in out
-        print("phase1 -> filter layer:", "gap-code-filter" in out)
+        ok &= "soundness-gate" in out and "GAP level" in out
+        print("phase1 -> gap soundness layer:", "GAP level" in out)
         (run / "phase1" / ".gap_filter_done").write_text("")
         out = nav(run)
         ok &= ("Phase 2" in out) and "open_scientist_layer" not in out
@@ -50,8 +51,13 @@ def main() -> int:
             if f.is_file():
                 shutil.copy(f, run / f.name)
         out = nav(run)
+        hit = "CARD level" in out
+        print("phase3 passed -> card soundness layer:", hit, "" if hit else out[:400])
+        ok &= hit
+        (run / "soundness_cards.json").write_text("{}")
+        out = nav(run)
         hit = "problem-selection" in out
-        print("phase3 passed -> selection layer:", hit, "" if hit else out[:400])
+        print("cards done -> selection layer:", hit)
         ok &= hit
     print("SELFTEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
