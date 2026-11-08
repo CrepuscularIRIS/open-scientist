@@ -1,6 +1,6 @@
 ---
 name: innovation-lens
-description: SOLUTION-side research taste (Open Scientist 0.5). After the soundness gate has admitted the bottlenecks (mainline + branches) and BEFORE RS Phase 2.1, run the 15 innovation types (A–O, 5 families) over each admitted bottleneck to rank SOLUTION ANGLES (how to solve it), so Phase 2.1 picks gap × pattern by an explicit taste ranking instead of ad hoc. It never selects, adds or re-ranks bottlenecks — problems are chosen by the mainline layer and the soundness gate. Use when os_next emits the lens layer before Phase 2, or when the user asks which kind of solution / contribution type fits an admitted bottleneck.
+description: SOLUTION-side research taste (Open Scientist 0.6). After the soundness gate has admitted the bottlenecks (mainline + branches) and BEFORE RS Phase 2.1, run the 15 innovation types (A–O, 5 families) over each admitted bottleneck to rank SOLUTION ANGLES (how to solve it), so Phase 2.1 picks gap × pattern by an explicit taste ranking instead of ad hoc. It never selects, adds or re-ranks bottlenecks — problems are chosen by the mainline layer and the soundness gate. Use when os_next emits the lens layer before Phase 2, or when the user asks which kind of solution / contribution type fits an admitted bottleneck.
 ---
 
 # 解法透镜（Research Taste 只用在解法侧）

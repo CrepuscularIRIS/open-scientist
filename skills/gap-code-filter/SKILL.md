@@ -1,6 +1,6 @@
 ---
 name: gap-code-filter
-description: OPTIONAL in Open Scientist 0.5 (no longer emitted by os_next; the soundness-gate layer replaced it, and its code-mapping step is the verifier's S3). Manual host filter + design layer between IdeaSpark Phase 1 and Phase 2. After phase1_output.json exists, STOP before Phase 2. Map every gap to the exact code line in the user's project that silently assumes it. Ask whether the simulator, model, protocol or code already exposes what makes that assumption unnecessary. Measure the phenomenon on existing runs, then run an admission audit (CPU, or offline GPU oracle; queue training only if unavoidable). Rewrite the gap list so Phase 2 receives only gaps backed by literature, code and measurement, and cross every admitted assumption with all 15 ideation patterns against the code to list concrete design options. Use whenever an IdeaSpark run reaches the end of Phase 1, or when the user asks for "默认接受但不必要的假设", a gap audit against code, or the gap filter.
+description: OPTIONAL in Open Scientist 0.6 (not emitted by os_next; the soundness-gate layer replaced it, and its code-mapping step is the verifier's S1 / S2). Manual host filter + design layer between IdeaSpark Phase 1 and Phase 2. After phase1_output.json exists, STOP before Phase 2. Map every gap to the exact code line in the user's project that silently assumes it. Ask whether the simulator, model, protocol or code already exposes what makes that assumption unnecessary. Measure the phenomenon on existing runs, then run an admission audit (CPU, or offline GPU oracle; queue training only if unavoidable). Rewrite the gap list so Phase 2 receives only gaps backed by literature, code and measurement, and cross every admitted assumption with all 15 ideation patterns against the code to list concrete design options. Use whenever an IdeaSpark run reaches the end of Phase 1, or when the user asks for "默认接受但不必要的假设", a gap audit against code, or the gap filter.
 ---
 
 # Gap 代码过滤层（IdeaSpark Phase 1 → [本层] → Phase 2）
@@ -10,7 +10,7 @@ IdeaSpark 原本只靠文献诊断 gap。本层由主会话执行，**夹在 Pha
 叙事口径（用户）：gap 存在，但我们没法证明现有做法错；找一个"之前很多人默认接受、但在本设置里其实不必要"的假设，去掉它，得到一个**更正确**的方向。没有代码落点的泛 gap 不收。
 
 ## 触发
-`os_next` 输出 gap-code-filter 层时（RS 已经报出 Phase 1 complete、准备进入 Phase 2），必须先跑完本层。k3.1 的辅助笔记先合并进 Phase 1，再进本层。
+0.6 起 os_next 不再输出本层；需要时由主会话手动调用（例如想要"默认但不必要的假设"四元组与"15 种模式 × 代码"设计表）。k3.1 的辅助笔记先合并进 Phase 1，再进本层。
 
 ## 五步
 

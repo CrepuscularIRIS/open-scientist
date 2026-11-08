@@ -1,23 +1,21 @@
-# Open Scientist 0.5
+# Open Scientist 0.6
 
-**ResearchStudio 出卡 + 主线优先 + soundness 门。** RS 的 idea_spark 是主干，负责检索、瓶颈诊断、生成、审查和写卡。Open Scientist 在它外面加两件事：先找出限制目标的**一条主线**（盲测首轮 + Crux 校验），再用一个**独立的验证器 agent** 对每条 gap 和每张卡判 KILL / CHECK / PASS，让 idea 在训练之前就被杀掉。方法论只给通过的条目排序。
+**ResearchStudio 生成 + 主线优先 + soundness 门。** RS 的 idea_spark（已同步上游 #63：带版本收据的 quality flow、formula repair、`intervention_object`）是生成器。Open Scientist 在它外面做三件事：
+1. **问题侧**：先找出限制目标的一条主线（盲测首轮 + Crux 校验），再找与它因果相连的 ≤2 条支线，每个 bottleneck 开一个 RS run；
+2. **soundness 门**：独立验证器（`agents/soundness-verifier.md`）只看代码和自己检索的文献，**不看项目自己的跑分**，在训练前杀掉 idea；
+3. **解法侧**：research taste（15 种创新类型）只给已准入的 bottleneck 排解决角度。
 
 | 位置 | 层 | 作用 |
 |---|---|---|
-| Phase 0 → 1 | `mainline` | 盲测首轮（不看我们的 claim）+ Crux 校验；一条主线、≤2 条因果相连的支线、反事实瓶颈检验 |
-| Phase 1 → 2 | `soundness-gate`（gap 级） | 验证器 `agents/soundness-verifier.md` 按固定评分表（现象实测、因果归属、代码一致、反事实瓶颈、口径伪影）打分；只删不增；主线优先排序 |
-| Phase 1 → 2（续） | `innovation-lens`（解法侧） | 15 种创新类型只给已准入的 bottleneck 排解决角度；不参与挑问题 |
-| Phase 3 → 4 | `soundness-gate`（卡级）→ `problem-selection` | 再加"机制可行"一项；只有 PASS 的卡进入排序和训练 |
-
-问题侧只用主线 / 支线挑 bottleneck；research taste 只在解法侧。任何 idea（不只 RS 的卡）在训练前都过验证器；验证器只看代码 + 文献，不看项目自己的跑分。
-
-可选工具：`gap-code-filter`（默认假设四元组 + 15 种模式 × 代码）。
+| Phase 0 → 1 | `mainline` | 一条主线、≤2 条支线、反事实瓶颈检验；Phase 1 由 `overlays/phase1.md` 把它当硬输入 |
+| Phase 1 → 2 | `soundness-gate`（gap 级）+ 现象准入 → `innovation-lens`（解法侧） | KILL 删除；只排解法；Phase 2 由 `overlays/generation.md` 按 gate 顺序选 anchor |
+| Phase 3 → 4 | `soundness-gate`（卡级）→ `problem-selection` | 卡写进跨 run 的 `cards.json`；KILL → 停在 CARD_KILLED，开新 run |
 
 驱动：`python3 scripts/os_next.py --dir <run_dir> --project <project> [--query "..."]`，流程见 `skills/open-scientist/SKILL.md`。
-自检：`python3 scripts/selftest_os_next.py <已完成的 RS run 目录>`。
+自检：`python3 scripts/selftest_os_next.py`（无参数；检查依赖的 RS 标签 + 各层触发顺序）。
 项目专属文件放在 `<project>/.open-scientist/`（模板见 `templates/`）。
 
-与 0.4 的区别：主线优先表述取代 innovation-lens 作为 Phase 0 → 1 的层，innovation-lens 移到解法侧（Phase 2.1 之前）；独立验证器（soundness-gate）取代 gap-code-filter 作为 Phase 1 → 2 的层，并在 Phase 4 前对卡再判一次；problem-selection 只排 PASS 的卡。
+与 0.5 的区别：同步上游 RS #63（三方合并，保留本地库检索、关闭 Semantic Scholar）；os_next 按产物触发，并对依赖的 RS 标签做自检；新增 RS overlays、现象准入、跨 run 卡池、KILL 停点，以及模型分工（设计 / 推理 / 执行三档，生成者 ≠ 验证者）。旧版 run 目录不能续跑。
 
 安装（本地）：
 ```bash

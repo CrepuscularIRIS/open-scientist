@@ -1,6 +1,6 @@
 # Idea Spark — Setup (first use only)
 
-Read this once when installing the skill; at run time SKILL.md never needs this file. The skill's Phase 0 + Phase 3.1 retrieval uses two connectors — the LOCAL corpora and arXiv — and neither needs an API credential. If one is unavailable (a missing local index, a network outage) the orchestrator continues with the other — but it prints a prominent **CONNECTORS DEGRADED** banner and writes a `.connectors_degraded` marker so a partial run is never mistaken for a full one.
+Read this once when installing the skill; at run time SKILL.md never needs this file. All API credentials are OPTIONAL and are configured by the user in `.env`; the skill never writes them. Every connector runs without credentials, and an invalid or expired key is dropped in-process the moment the API rejects it (the connector continues keyless and prints one stderr note): arXiv needs none; OpenAlex falls back to the keyless polite pool; Semantic Scholar falls back to keyless pacing (slower, more 429 backoff); OpenReview falls back to the anonymous client, which still reads public in-review submissions. Only a missing pip package disables a connector — then the orchestrator prints a prominent **CONNECTORS DEGRADED** banner and writes a `.connectors_degraded` marker so a partial run is never mistaken for a full one.
 
 0. **Set two shell variables once per session** — where this skill is installed, and where run outputs should go. Neither depends on the harness:
    ```bash
@@ -24,7 +24,9 @@ Read this once when installing the skill; at run time SKILL.md never needs this 
 
 | Key | Required for | How to get |
 |---|---|---|
-| *(none)* | Nothing. This install retrieves from the LOCAL corpora + arXiv only, and neither needs a credential. | — |
+| `OPENREVIEW_USER` + `OPENREVIEW_PASS` | OpenReview connector at logged-in rate limits. Without them (or with rejected ones) the connector reads public submissions anonymously. | Free signup at https://openreview.net |
+| `SEMANTICSCHOLAR_API_KEY` | Semantic Scholar connector at usable rate. Anonymous tier (~100 req/5min) hits 429 on Phase 0 multi-query batches; with key it's stable at 1 req/s. | Free apply at https://www.semanticscholar.org/product/api#api-key-form (≈24h review). Connector runs keyless without it (or with a rejected key), pacing 3 s and backing off on 429. |
+| `OPENALEX_API_KEY` | Optional, premium rate. The keyless polite pool already works for typical Phase 0 load; a rejected key is dropped in-process. | Apply at openalex.org if you exceed polite limits. |
 
 The credentialed connectors (OpenReview, Semantic Scholar, OpenAlex) are
 unregistered in `scripts/run.py`. Any `OPENREVIEW_*` / `SEMANTICSCHOLAR_API_KEY`
@@ -49,3 +51,8 @@ point `search_local.py` at a different paper-search install with
 7. **Optional — standing compute profile**: if your real budget differs from the factory default (80GB-class GPUs, ≤8 concurrent, ≈150 GPU-days / 5 months, ~$10k API campaign), add one line to `.env` instead of re-typing it per run: `IDEASPARK_DEFAULT_COMPUTE="8×H100 node, ~300 GPU-days, $50k API budget"`. Precedence: compute stated in your query > this profile > factory default.
 
 If a connector shows ❌, it's either missing creds (fix in `.env`) or missing the pip package (the error message tells you which `pip install` to run). If a full-text dep shows ⚠️, run `pip install feedparser beautifulsoup4 pymupdf`.
+
+
+## Open Scientist build notes
+- Credentials: `.env` is looked up in the skill dir, then `~/.config/open-scientist/.env` (symlink it to your RS `.env`; never copy secrets).
+- Retrieval jobs: arXiv + local corpus (`scripts/search_local.py`, recent + published) + OpenReview. Semantic Scholar is disabled.

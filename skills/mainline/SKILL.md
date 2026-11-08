@@ -1,6 +1,6 @@
 ---
 name: mainline
-description: Mainline-first problem formulation (Open Scientist 0.5). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses) followed by a crux validation against our claims, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
+description: Mainline-first problem formulation (Open Scientist 0.6). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses) followed by a crux validation against our claims, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
 ---
 
 # 主线优先（Problem formulation → bottleneck → causal structure）
@@ -52,6 +52,9 @@ prompt 要点（照抄）：
 
 ## 主线本身也要过验证器
 Crux 校验给出的主线和每条支线，各作为一条 gap 级 claim 送 `soundness-gate`（验证器只看代码 + 文献）。主线被 KILL → 主线改为次优候选，并在变更记录里写明。
+
+## 一个 bottleneck 一个 RS run
+RS 一次只出一个 anchor 的卡。主线和每条支线各开一个 RS run（`ideaspark_run/<slug>-main`、`-b1`、`-b2`），`phase0/user_query.txt` 第一行写 `TARGET: mainline | branch:1 | branch:2`；同一份 `mainline_first.json` 复制进每个 run 的 `phase0/`。用成熟方法解的那条不开 RS run（见 `soundness-gate`）。
 
 ## 下游怎么用
 - RS Phase 1 拿到 `mainline_first.json` 作为附加输入：gap 要标出属于主线、哪条支线，或与主线无关。

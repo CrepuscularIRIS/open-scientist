@@ -1,7 +1,7 @@
 {
   "name": "open-scientist",
-  "version": "0.5.0",
-  "description": "ResearchStudio idea_spark as the backbone (retrieval, bottleneck diagnosis, generation, gauntlet, idea card), with a mainline-first formulation after Phase 0 (blind first pass + crux validation: one mainline, at most two causally linked branches) and an independent soundness gate (verifier agent: KILL / CHECK / PASS against the project's code and measured facts) after Phase 1 for gaps and after Phase 3 for cards, so ideas die before training. Problem-selection (from Anthropic's scientific-problem-selection) only ranks what passed.",
+  "version": "0.6.0",
+  "description": "ResearchStudio idea_spark (synced to upstream #63: versioned quality flow, formula repair, intervention_object) as the generator, with a mainline-first formulation (blind first pass + crux validation: one mainline, at most two causally linked branches; one RS run per bottleneck), an independent soundness verifier (code + literature only, never the project's own scores) that kills every idea before training, solution-side research taste (15 innovation types rank solution angles only), and problem-selection over a cross-run card registry.",
   "author": {
     "name": "CrepuscularIRIS"
   },
