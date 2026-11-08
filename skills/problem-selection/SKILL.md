@@ -1,6 +1,6 @@
 ---
 name: problem-selection
-description: Rank research cards and candidate methods, decide go / no-go and the first falsifying experiment, and get unstuck — the problem-choice layer of Open Scientist 0.6 — applied only to cards that PASSED the soundness gate, distilled from Anthropic's scientific-problem-selection skill (Fischbach & Walsh, Cell 2024). Use after IdeaSpark Phase 3 (os_next emits it before Phase 4), when several cards or methods compete, when defining what a project optimises before Phase 0, or when an experiment line is stuck.
+description: Rank research cards and candidate methods, decide go / no-go and the first falsifying experiment, and get unstuck — the problem-choice layer of Open Scientist 0.6 — applied only to cards the soundness gate did not kill, distilled from Anthropic's scientific-problem-selection skill (Fischbach & Walsh, Cell 2024). Use after IdeaSpark Phase 3 (os_next emits it before Phase 4), when several cards or methods compete, when defining what a project optimises before Phase 0, or when an experiment line is stuck.
 ---
 
 # 选题与选法（problem-selection）
