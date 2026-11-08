@@ -93,7 +93,9 @@ def _load_env_file() -> None:
     os.environ for any KEY=VALUE pair that is not already set (shell-provided values
     take precedence so users can override).
     """
-    candidates = [ROOT, ROOT.parent, ROOT.parent.parent, ROOT.parent.parent.parent]
+    # Open Scientist: an installed plugin copy has no .env (gitignored), so also look in a stable user dir.
+    candidates = [ROOT, ROOT.parent, ROOT.parent.parent, ROOT.parent.parent.parent,
+                  Path.home() / '.config' / 'open-scientist']
     for d in candidates:
         env_file = d / '.env'
         if env_file.exists():

@@ -20,4 +20,4 @@
 claude plugin marketplace add /path/to/open-scientist
 claude plugin install open-scientist@open-scientist-local
 ```
-检索用 arXiv + OpenReview + 本地库。凭据放在 `skills/idea-spark/.env`（建议用软链接），不要提交。
+检索用 arXiv + OpenReview + 本地库。凭据放在 `~/.config/open-scientist/.env`（安装后的插件副本没有 `.env`；建议软链接到你的 RS `.env`），开发副本也可放 `skills/idea-spark/.env`。不要提交。
