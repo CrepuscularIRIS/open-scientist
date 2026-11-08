@@ -11,7 +11,7 @@ description: >-
 # Idea Spark Skill
 
 > **Open Scientist 0.4 build of ResearchStudio idea_spark.** Drive it through `/open-scientist` (`scripts/os_next.py`), which runs this skill's `run.py next` and inserts the selection layers: `innovation-lens` after Phase 0, `gap-code-filter` after Phase 1, `problem-selection` after Phase 3.
-> Retrieval in this build: arXiv + OpenReview + the offline local corpus; Semantic Scholar is disabled (connector, host-ref verification and full-text helpers skip it). Credentials are read from `.env` next to this file (symlink it; never commit secrets).
+> Retrieval in this build: arXiv + OpenReview + the offline local corpus; Semantic Scholar is disabled (connector, host-ref verification and full-text helpers skip it). Credentials are read from `.env` next to this file or from `~/.config/open-scientist/.env` (installed copies have no `.env`; symlink it; never commit secrets).
 > Model routing is the host's choice; the reference setup runs every LLM step in an isolated strong-model sub-agent and adds an independent second-model assist on Phase 1 gap diagnosis, merged by the host.
 
 Convert an under-specified research direction into ONE reviewer-defensible Oral-level research proposal — grounded in 1947 ICLR/ICML/NeurIPS papers (2021-2025) — via a 5-phase workflow: retrieve recent literature, diagnose the bottleneck, select + generate a candidate using corpus-derived ideation pattern cards, run it through a quality gauntlet, expand into an idea card.
