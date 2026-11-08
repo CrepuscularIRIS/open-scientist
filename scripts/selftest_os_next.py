@@ -42,6 +42,10 @@ def main() -> int:
         print("phase1 -> gap soundness layer:", "GAP level" in out)
         (run / "phase1" / ".gap_filter_done").write_text("")
         out = nav(run)
+        ok &= "solution lens" in out
+        print("gap gate done -> solution lens layer:", "solution lens" in out)
+        (run / "phase1" / "solution_lens.json").write_text("{}")
+        out = nav(run)
         ok &= ("Phase 2" in out) and "open_scientist_layer" not in out
         print("filter done -> RS Phase 2:", "Phase 2" in out)
         for d in src.iterdir():

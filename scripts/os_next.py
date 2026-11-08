@@ -7,9 +7,10 @@ instead; otherwise it passes the RS step through, adding the layer outputs as ex
 
   RS wants "Phase 1 — bottleneck identification"  and phase0/mainline_first.json is missing -> mainline (blind pass + crux)
   RS wants "Phase 2.1 + 2.2"                     and phase1/.gap_filter_done is missing   -> soundness-gate (gap level)
+  RS wants "Phase 2.1 + 2.2"                     and phase1/solution_lens.json is missing -> innovation-lens (solution angles)
   RS wants "Phase 4 skeleton"                    and soundness_cards.json is missing      -> soundness-gate (card level)
   RS wants "Phase 4 skeleton"                    and selection.json is missing            -> problem-selection (PASS cards)
-  innovation-lens and gap-code-filter are optional tools in 0.5 (not emitted).
+  Problem side = mainline + soundness gate; research taste (innovation-lens) is solution side only. gap-code-filter is optional.
   (state-free, idempotent: completion = the marker file; re-run any time)
 
 Usage: python3 scripts/os_next.py --dir <run_dir> [--query "..."] [--project <project root>]
@@ -48,6 +49,15 @@ LAYERS = {  # checked in this order; the first unmet layer whose trigger matches
         "outputs": lambda run: [run / "phase1" / "phase1_output.json (gap list: kept gaps only, mainline first; original kept as *_unfiltered)",
                                 run / "phase1" / "soundness_gaps.json", run / "phase1" / ".gap_filter_done"],
     },
+    "lens": {
+        "trigger": "Phase 2.1 + 2.2",
+        "marker": lambda run: run / "phase1" / "solution_lens.json",
+        "skill": "innovation-lens",
+        "title": "Open Scientist layer — solution lens (15 innovation types rank SOLUTION angles per admitted bottleneck) BEFORE Phase 2.1",
+        "inputs": lambda run, proj: [run / "phase1" / "soundness_gaps.json", run / "phase0" / "mainline_first.json",
+                                      run / "phase0" / "lit_table.md", proj / ".open-scientist" / "code_map.md"],
+        "outputs": lambda run: [run / "phase1" / "solution_lens.zh.md", run / "phase1" / "solution_lens.json"],
+    },
     "cards": {
         "trigger": "Phase 4 skeleton",
         "marker": lambda run: run / "soundness_cards.json",
@@ -71,7 +81,8 @@ LAYERS = {  # checked in this order; the first unmet layer whose trigger matches
 }
 EXTRA_INPUTS = {  # RS steps that must also read a layer output
     "Phase 1 — bottleneck identification": lambda run: [run / "phase0" / "mainline_first.json"],
-    "Phase 2.1 + 2.2": lambda run: [run / "phase0" / "mainline_first.json", run / "phase1" / "soundness_gaps.json"],
+    "Phase 2.1 + 2.2": lambda run: [run / "phase0" / "mainline_first.json", run / "phase1" / "soundness_gaps.json",
+                                     run / "phase1" / "solution_lens.json"],
 }
 
 

@@ -6,15 +6,18 @@
 |---|---|---|
 | Phase 0 → 1 | `mainline` | 盲测首轮（不看我们的 claim）+ Crux 校验；一条主线、≤2 条因果相连的支线、反事实瓶颈检验 |
 | Phase 1 → 2 | `soundness-gate`（gap 级） | 验证器 `agents/soundness-verifier.md` 按固定评分表（现象实测、因果归属、代码一致、反事实瓶颈、口径伪影）打分；只删不增；主线优先排序 |
+| Phase 1 → 2（续） | `innovation-lens`（解法侧） | 15 种创新类型只给已准入的 bottleneck 排解决角度；不参与挑问题 |
 | Phase 3 → 4 | `soundness-gate`（卡级）→ `problem-selection` | 再加"机制可行"一项；只有 PASS 的卡进入排序和训练 |
 
-可选工具：`innovation-lens`（15 种创新类型）、`gap-code-filter`（默认假设四元组 + 15 种模式 × 代码）。
+问题侧只用主线 / 支线挑 bottleneck；research taste 只在解法侧。任何 idea（不只 RS 的卡）在训练前都过验证器；验证器只看代码 + 文献，不看项目自己的跑分。
+
+可选工具：`gap-code-filter`（默认假设四元组 + 15 种模式 × 代码）。
 
 驱动：`python3 scripts/os_next.py --dir <run_dir> --project <project> [--query "..."]`，流程见 `skills/open-scientist/SKILL.md`。
 自检：`python3 scripts/selftest_os_next.py <已完成的 RS run 目录>`。
 项目专属文件放在 `<project>/.open-scientist/`（模板见 `templates/`）。
 
-与 0.4 的区别：主线优先表述取代 innovation-lens 作为 Phase 0 → 1 的层；独立验证器（soundness-gate）取代 gap-code-filter 作为 Phase 1 → 2 的层，并在 Phase 4 前对卡再判一次；problem-selection 只排 PASS 的卡。
+与 0.4 的区别：主线优先表述取代 innovation-lens 作为 Phase 0 → 1 的层，innovation-lens 移到解法侧（Phase 2.1 之前）；独立验证器（soundness-gate）取代 gap-code-filter 作为 Phase 1 → 2 的层，并在 Phase 4 前对卡再判一次；problem-selection 只排 PASS 的卡。
 
 安装（本地）：
 ```bash

@@ -1,18 +1,17 @@
 ---
 name: innovation-lens
-description: OPTIONAL in Open Scientist 0.5 (no longer emitted by os_next; the mainline layer replaced it at Phase 0 → 1). Research-taste tagging tool. After the literature pool (lit_table.md) exists and BEFORE bottleneck diagnosis, run the 15 innovation types (A–O, grouped into 5 families) over the mainline bottlenecks and our measured facts, to confirm or adjust the mainline and to produce a RANKED list of lenses. Phase 1 and the Phase 2.1 selection then use that ranking instead of letting the model pick patterns ad hoc. Use whenever an IdeaSpark run reaches the end of Phase 0 (os_next emits this layer), when choosing or re-checking the paper mainline, or when the user asks which kind of contribution or "research taste" a direction has.
+description: SOLUTION-side research taste (Open Scientist 0.5). After the soundness gate has admitted the bottlenecks (mainline + branches) and BEFORE RS Phase 2.1, run the 15 innovation types (A–O, 5 families) over each admitted bottleneck to rank SOLUTION ANGLES (how to solve it), so Phase 2.1 picks gap × pattern by an explicit taste ranking instead of ad hoc. It never selects, adds or re-ranks bottlenecks — problems are chosen by the mainline layer and the soundness gate. Use when os_next emits the lens layer before Phase 2, or when the user asks which kind of solution / contribution type fits an admitted bottleneck.
 ---
 
-# 创新类型透镜（IdeaSpark Phase 0 → [本层] → Phase 1）
+# 解法透镜（Research Taste 只用在解法侧）
 
-**为什么需要这一层**：RS 的 15 种 ideation 模式偏向工程推导（"怎么改"），每轮都由 AI 自己挑两种，挑法不稳定。
-本层在诊断瓶颈之前，先用 15 种**创新类型**（"哪一类贡献"）筛选、排序方向，作为 research taste。我们只做方法论文，所以它决定的是**挑哪种方法**，不是要不要写理论或评测论文。
+**位置**：soundness 门（gap 级）之后、RS Phase 2.1 之前。产物 `phase1/solution_lens.json`。
 
-层次关系：
-- **本层（innovation-lens）**：选贡献类型，排序；
-- **Phase 1**：诊断瓶颈；
-- **gap-code-filter**：对照代码、做准入审计、设计层（15 种 ideation 模式 × 代码）；
-- **Phase 2**：生成方法。
+**分工（用户 2026-11-08）**：
+- **问题侧**（挑哪个 bottleneck）：只由 `mainline`（主线 / 支线，最小充分的问题表述）和 `soundness-gate` 决定。research taste 不参与：按"哪类贡献好看"去挑问题，会从方法反推问题。
+- **解法侧**（怎么解）：本层用 15 种创新类型给每个已准入的 bottleneck 排**解决角度**，作为 Phase 2.1 的优先级。
+
+本层不新增、不删除、不重排 bottleneck；主线的解法先排，支线其次。
 
 ## 15 种类型，按 5 族分组
 | 族 | 核心问题 | 类型 | 对应的 IdeaSpark 模式（覆盖情况） |
@@ -26,34 +25,19 @@ description: OPTIONAL in Open Scientist 0.5 (no longer emitted by os_next; the m
 IdeaSpark 没有覆盖或只部分覆盖的：B、C、F、H、K、M、N、O（以及部分 G）。这些在本层显式补上。
 
 ## 步骤
-1. **输入**：
-   - 本轮的 `phase0/lit_table.md` 和 `user_query.txt`；
-   - 项目的实测事实 `<project>/.open-scientist/facts.md`；
-   - 主线和候选瓶颈 `<project>/.open-scientist/mainline.md`（`mainline` skill）；
-   - 已有的候选清单（如果项目有）。
-2. **逐个瓶颈扫 15 类**：每类写一句"在这个瓶颈上它意味着什么"。写不出来的标 ✗，不要硬凑。每个候选要写清：
-   - 依据的实测，或者需要补的最小实验（数字 / 未测）；
-   - 代码落点 `file:line`（如果有）；
+1. **输入**：`phase1/soundness_gaps.json`（已准入的 gap 及其主线 / 支线位置）、`phase0/mainline_first.json`、`phase0/lit_table.md`、`<project>/.open-scientist/code_map.md`。
+2. **逐个已准入的 bottleneck 扫 15 类**：每类写一句"用这类思路解它，具体是什么改动"。写不出来的标 ✗，不硬凑。每个角度写清：
+   - 代码落点 `file:line`；
    - 难度；
-   - 方法论文适配度：能落成一个算法 = 高；只能落成分析或评测 = 低，只作为支撑；
-   - 文献风险：lit_table 中最接近的论文。
-3. **排序**（每个瓶颈取前 3 个）。依据依次是：
-   - ① 证据强度：已实测 > 可离线准入 > 只能训练后才知道；
-   - ② 方法论文适配度；
-   - ③ 难度：用户偏好"中"，A、B 优先；
-   - ④ 文献风险。
-   排序是 research taste 的显式化，**不替代**后面的准入审计。
-4. **确认主线**：如果前 3 中有某个瓶颈的候选全是低适配或高风险，就建议换瓶颈，或者降为附录，写进 `<project>/.open-scientist/mainline.md`。
-5. **输出**：
-   - `ideaspark_run/<slug>/phase0/innovation_lens.zh.md`（表格 + 排序 + 理由）；
-   - 同名 `.json`：`{bottleneck: [{type, family, claim, evidence, code, difficulty, method_fit, lit_risk, rank}]}`。
-6. **下游怎么用**：
-   - **Phase 1**：sub-agent 的输入里加上这份文件，要求优先诊断与排名靠前的类型相对应的 gap，但不得为了迎合排序而编造 gap；
-   - **Phase 2.1**：选 gap 和模式时，排序作为优先级和打破平局的依据；选了排名外的类型，要在 `composition_note` 里写明理由；
-   - **gap-code-filter**：设计层的"15 模式 × 代码"表，按本层的类型排序展开。
+   - 方法论文适配度：能落成一个算法 = 高，只能落成分析或评测 = 低；
+   - 文献风险：lit_table 里最接近的论文（arXiv 编号）；
+   - 是否属于"集成成熟方法"（可以直接用别人领域内的方法）。
+3. **排序**（每个 bottleneck 取前 3）：① 能否直接作用到验证器确认的那条代码路径（S2 的缺口）；② 方法论文适配度；③ 难度（偏好中等，简单可靠优先）；④ 文献风险。
+4. **输出**：`phase1/solution_lens.zh.md`（表格 + 排序 + 理由）与 `phase1/solution_lens.json`：`{"<gap_id>": {"position": "mainline|branch", "angles": [{"type", "family", "change", "code", "difficulty", "method_fit", "lit_risk", "mature_method", "rank"}]}}`。
+5. **下游**：Phase 2.1 按这份排序挑 gap × 模式，主线的 gap 先挑；选了排名外的角度要在 `composition_note` 里写明理由。生成的卡照常过卡级 soundness 门。
 
 ## 规则
-- 只用已实测或可准入的事实；问题必须真实存在，不从方法反推问题，证据保守。
-- **类型只是挑选方向的依据，不是叙事模板**。不为了凑某个"高级"类型（C、H、I）去编问题。
+- 只给已准入的 bottleneck 排解法；不借"某类贡献更高级"回头改问题。
+- **类型只是挑解法的依据，不是叙事模板**。不为了凑某个"高级"类型（C、H、I）去改写问题。
 - 方法论文优先：D、G、O 一般作为动机或评测部分，除非能直接落成算法。
 - 难度为"极高"的（C）只列出，不作为主线，除非已经有反证数据（例如 A-37 对"确定性 WM 不能加推扰"的反证）。
