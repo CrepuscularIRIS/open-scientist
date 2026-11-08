@@ -1,36 +1,5 @@
-# Third-party source and adaptation notices
+# Third-party notices
 
-This package combines new MIT-licensed code and documentation (the Forge engine in `forge/`, the study,
-domain and idea prompts in `prompts/`, the protocols and variants in `references/`) with the following
-retained assets. The root license does not replace their licenses.
-
-| Source | Retained license | Location |
-|---|---|---|
-| ResearchStudio | MIT | [license](licenses/research-studio/LICENSE), [archive](vendor/research-studio/LICENSE) |
-| Research Companion | MIT | [license](licenses/research-companion/LICENSE), [archive](vendor/research-companion/LICENSE) |
-| Co-Scientist | Apache-2.0 | [license](licenses/co-scientist/LICENSE), [archive](vendor/co-scientist/LICENSE) |
-
-Exact repository commits, paths, dirty status and file hashes are in
-[source-manifest.json](docs/source-manifest.json). Four pre-existing Companion
-working-tree modifications were preserved; the archive is a snapshot of those
-files, not a claim that they are all identical to upstream HEAD.
-
-The files under `references/methods/` are modified adaptations, with provenance
-and change notices at their beginnings or ends. Core scientific reasoning and
-paragraphs are retained where applicable; host paths, fixed stages, model panels,
-default budgets and conflicting evaluation rules have been adapted. The method texts of
-Open Scientist 0.2's skills now live in `references/methods/actions/`, and the Forge prompts in `prompts/`
-adapt ResearchStudio IdeaSpark phase prompts (bottleneck, generation, coherence trace, critique, revision,
-expansion), Research Companion's brainstormer, critic and strategist, and Co-Scientist's review and
-evolution operators; each prompt names its sources. Apache-derived content
-retains the original Apache-2.0 terms and notices. No source root NOTICE file
-was present in the inspected snapshots.
-
-The independent local/arXiv adapter uses the installed corpus's schema and the
-public arXiv API; it does not copy the unrelated installed paper-search code or
-redistribute its PDFs/database. Writing-skills and mcp-builder were used as
-authoring guidance, not bundled as assets or represented as our original work.
-
-`forge/vendor/corpus.py` and `forge/vendor/openreview_*.py` are Open Scientist's own MIT code (the arXiv
-collector and the OpenReview connector). `forge/search.py` is Open Scientist 0.2's local/arXiv adapter, moved
-unchanged.
+- `skills/idea-spark/` — ResearchStudio Idea (idea_spark), MIT License, see `licenses/research-studio/LICENSE`.
+  Local changes: Semantic Scholar disabled (connector, host-ref verification, full-text helpers); OpenReview Phase 0 job enabled; SKILL.md overlay pointing at the Open Scientist navigator.
+- `skills/problem-selection/references/` — files 02, 03, 04, 05, 07 copied unchanged from Anthropic's `life-sciences/scientific-problem-selection` (Apache License 2.0, see `licenses/anthropic-life-sciences/LICENSE`), based on Fischbach & Walsh, Cell 187:1828 (2024). `skills/problem-selection/SKILL.md` is a condensed adaptation.

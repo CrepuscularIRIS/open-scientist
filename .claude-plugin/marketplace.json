@@ -1,14 +1,15 @@
 {
   "name": "open-scientist-local",
-  "description": "Local marketplace for the Open Scientist research plugin.",
   "owner": {
-    "name": "Open Scientist contributors"
+    "name": "CrepuscularIRIS"
   },
   "plugins": [
     {
       "name": "open-scientist",
       "source": "./",
-      "description": "Open Scientist 0.3: the Forge study loop, skills, seat agents, Mod pane and the standard-library MCP server for Claude Code."
+      "description": "ResearchStudio + research-taste selection layers (0.4)",
+      "version": "0.4.0"
     }
-  ]
+  ],
+  "description": "Open Scientist: ResearchStudio idea cards + research-taste selection layers"
 }
