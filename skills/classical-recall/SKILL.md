@@ -1,13 +1,13 @@
 ---
 name: classical-recall
-description: SOLUTION-side core of Open Scientist 0.7 — classical-theory recall and modeling. After the soundness gate has admitted the bottlenecks and BEFORE RS Phase 2.1, recall the classical ORIGINAL problems (2010 and earlier, top venues or foundational journals) that are structurally close to each admitted bottleneck, then model each prioritised object in its own isolated context to the user's Q1–Q8 standard (naive failure → object → construction → property and its conditions → mapping with a mismatch → hand example → minimal pseudocode + cost → counterexample). The ranked anchors become the construction RS 2.2 must transport. Replaces the 0.4–0.6 innovation-lens. Use when os_next emits the classical layer, or when the user asks for a classical-theory recall / modeling report on a bottleneck.
+description: SOLUTION-side core of Open Scientist 0.8 — classical-theory recall and modeling. After the soundness gate has admitted the bottlenecks and BEFORE RS Phase 2.1, recall the classical ORIGINAL problems (2010 and earlier, top venues or foundational journals) that are structurally close to each admitted bottleneck, then model each prioritised object in its own isolated context to the user's Q1–Q8 standard (naive failure → object → construction → property and its conditions → mapping with a mismatch → hand example → minimal pseudocode + cost → counterexample). The ranked anchors become the construction RS 2.2 must transport. Replaces the 0.4–0.6 innovation-lens. Use when os_next emits the classical layer, or when the user asks for a classical-theory recall / modeling report on a bottleneck.
 ---
 
 # 经典建模（解法侧的核心层）
 
 **标准**：`references/modeling-standard.md`（用户手册原文：§1 的顺序、§4.2 的 Q1–Q8 与交付、§5 步骤 B–F）。本文件只写本插件里**怎么执行**；标准本身以原文为准。
 
-**为什么在这里**：RS 2.2 只会从 2021–2025 的语料模式里拼机制，没有一条"为什么这个构造保持了某个性质"的推导链。本层先从经典原问题里把**构造和它的保持性质**推出来，2.2 只负责把它落到本项目的代码上。
+**为什么在这里**：RS 2.2 只会从 2021–2025 的 ML 语料模式里拼机制（其他领域更没有对应语料），没有一条"为什么这个构造保持了某个性质"的推导链。本层先从经典原问题里把**构造和它的保持性质**推出来，2.2 只负责把它落到本项目的代码上。
 
 **位置**：gap 级 soundness 门 + 现象准入之后、RS Phase 2.1 之前。产物 `phase1/classical/` 与 `phase1/classical_anchors.json`。
 **不是门**：报告不满足 Q1–Q8，只说明"建模没完成"，不等于方向被 KILL（原文 §4.2 首段）。杀 idea 的仍然只有 soundness 验证器（卡级 S7 核经典前提）。本层不增删、不重排 bottleneck。
@@ -26,7 +26,7 @@ RS 连接器（arXiv、2021–2025 本地库、OpenReview）基本覆盖不到 2
 ## 三步
 
 ### 1. 宽 Recall（步骤 B；隔离 sub-agent，`model=sonnet`）
-每条已准入的 gap（主线先）列出**尽量多**的经典原问题候选（用户 2026-11-09：多列举；不少于 6 个，来自不同领域：控制、博弈、统计、优化、经典 RL、信号处理……），每个写：
+每条已准入的 gap（主线先）列出**尽量多**的经典原问题候选（用户 2026-11-09：多列举；不少于 6 个，至少来自 5 个不同学科；按问题选，不限于本领域——例如统计与估计、控制与系统辨识、决策与博弈、优化、信息论、物理与化学的经典模型、经济学、实验设计），每个写：
 `obj_id`、对象 / 构造名、原始工作（作者、年份、正式出处、链接；未核的标 `unverified`）、**为什么匹配**（结构与信息条件，不是名词相似）、**哪里失配**、**能导出什么性质**。
 分成三档：`priority`（优先深入）/ `analysis_only`（保留分析用途）/ `not_fit`（暂不贴切），每个写一句理由。
 → `phase1/classical/recall.json`：`{"candidates": [{"obj_id", "gap_id", "tier", "object", "work", "why_match", "mismatch", "property", "reason"}]}`。
@@ -36,7 +36,7 @@ RS 连接器（arXiv、2021–2025 本地库、OpenReview）基本覆盖不到 2
 1. 主锚点：作者、准确年份、正式出处、原文链接、**阅读定位**（章节 / 页码 / 定理号）；偏离 2010 年以前或顶会 / 奠基期刊的优先级时写理由。
 2. 原问题 + 朴素失败例，解释原构造为什么出现（Q5 的链：朴素办法为什么失败 → 引入什么对象 → 为什么这样构造 → 得到什么性质 → 前提在哪里用到）。
 3. 对象映射表（经典对象 ↔ 本项目的状态 / 动作 / 观察 / 目标），**至少一处重要失配**，一个完整手算例。
-4. 一条明确的保持性质及其条件、一个反例、最轻伪代码（信号进入位置：奖励 / return / advantage / baseline / 补偿项 / 样本权重 / 辅助损失 / 上下文）和四项成本（新增参数、前向/反向、额外 rollout、存储/上下文）。
+4. 一条明确的保持性质及其条件、一个反例、最轻伪代码（**进入位置**：方法改动的具体对象——ML 里是奖励 / 损失项 / baseline / 样本权重 / 输入；实验科学里是实验设计 / 估计量 / 对照 / 采样方案；工程里是控制律 / 观测器 / 约束……）和四项成本（`params` 新增参数或自由度、`compute` 额外计算、`data` 额外数据或实验次数、`storage` 存储 / 上下文）。
 5. 证据标记：`[原理论]` / `[迁移推导]` / `[猜测]` / `[现代训练证据]` 分开；结尾写下一次只解决哪个接口。
 只读过摘要的对象：报告照写，但 `status=lead`（待核线索），不能当锚点。
 同时写 `phase1/classical/<obj_id>.json`：一条 `order` 项的全部字段（见下）+ `status`（`modeled` 或 `lead`）。
@@ -53,7 +53,7 @@ RS 连接器（arXiv、2021–2025 本地库、OpenReview）基本覆盖不到 2
             "anchor": {"authors": "...", "year": 1999, "venue": "...", "url": "...", "read_location": "§3, Thm 1"},
             "construction": "一句话构造", "property": "保持的性质", "conditions": ["性质成立所需的前提", "..."],
             "mismatch": ["最重要的失配", "..."], "entry": "信号进入位置 + 代码对象",
-            "cost": {"params": "...", "fwd_bwd": "...", "rollouts": "...", "storage": "..."},
+            "cost": {"params": "...", "compute": "...", "data": "...", "storage": "..."},
             "refuted_by": "能推翻它的最小反例 / 实验", "report": "phase1/classical/<obj_id>.md",
             "h_axes": {"fit": "...", "new_constraint": "...", "signal": "...", "error_damages": "...", "cost": "...", "refutation": "..."}}],
  "leads": ["<status=lead 的 obj_id>"], "analysis_only": ["..."], "rationale": "排序理由"}

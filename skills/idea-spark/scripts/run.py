@@ -328,6 +328,21 @@ COLLISION_CHANNEL_CAP = 120
 # losing record, so preferring local never costs an abstract.
 DEDUP_PRIORITY = {'local': 4, 'arxiv': 1}
 
+# Open Scientist domain switch (OPEN_SCIENTIST_DOMAIN). 'ml' (default) keeps the build above:
+# local ML-venue corpora + arXiv + OpenReview. 'general' (any field) drops the local corpora (they
+# hold ML venues only and need the /data index) and runs arXiv + OpenReview only (user 2026-11-09:
+# no OpenAlex). arXiv gets a second, older window (6-24 mo) to stand in for the published tier the
+# local corpora covered; OpenReview widens to 24 mo.
+OS_DOMAIN = os.environ.get('OPEN_SCIENTIST_DOMAIN', 'ml').strip().lower() or 'ml'
+if OS_DOMAIN not in ('ml', 'general'):
+    raise SystemExit(f"OPEN_SCIENTIST_DOMAIN={OS_DOMAIN!r}: must be 'ml' or 'general'")
+if OS_DOMAIN == 'general':
+    CONNECTORS = [c for c in CONNECTORS if c[0] != 'local']
+    PHASE0_RETRIEVAL_JOBS = [j for j in PHASE0_RETRIEVAL_JOBS if j['connector'] == 'arxiv'] + [
+        {'job': 'arxiv_older', 'connector': 'arxiv',      'window_min': 6, 'window_max': 24, 'max_results': 30, 'max_per_query': 200, 'extra_args': [], 'timeout': 600},
+        {'job': 'openreview',  'connector': 'openreview', 'window_min': 0, 'window_max': 24, 'max_results': 20, 'max_per_query': 50,  'extra_args': [], 'timeout': 600}]
+    DEDUP_PRIORITY = {'openreview': 2, 'arxiv': 1}
+
 
 # --- connector availability ------------------------------------------------
 
@@ -909,7 +924,7 @@ def cmd_phase0(args) -> int:
     # `local` is a PUBLISHED source — every record is an accepted paper at a real
     # venue — so it satisfies this check exactly as openalex/semanticscholar did.
     # If none of them ran, the published window is empty and Phase 1 sees preprints only.
-    published_succeeded = any(s in successes for s in ('local', 'openalex', 'semanticscholar'))
+    published_succeeded = any(s in successes for s in ('local', 'openalex', 'semanticscholar', 'openreview'))
     if not published_succeeded:
         print(f'\nNOTE: no published-source connector succeeded (local corpus + openalex + '
               f'semanticscholar all unavailable). Phase 0 ran on preprint-only sources '

@@ -1,11 +1,11 @@
 ---
 name: soundness-gate
-description: Kill ideas before training (Open Scientist 0.7). Host procedure that sends each RS gap (after Phase 1), each candidate mechanism (after the coherence gate, before collision) and each RS card (after Phase 3) to the independent soundness-verifier agent, one isolated call per claim, then applies the mechanical KILL / CHECK / PASS rule. The verifier sees only code and literature, never the project's own results or scores (no reward hacking); and rewrites the gap list / card list ordered mainline first, branches second. Use whenever os_next emits the soundness-gate layer, before writing any PREREG that needs training, or when the user asks whether a problem or idea is sound.
+description: Kill ideas before training (Open Scientist 0.8). Host procedure that sends each RS gap (after Phase 1), each candidate mechanism (after the coherence gate, before collision) and each RS card (after Phase 3) to the independent soundness-verifier agent, one isolated call per claim, then applies the mechanical KILL / CHECK / PASS rule. The verifier sees only code and literature, never the project's own results or scores (no reward hacking); and rewrites the gap list / card list ordered mainline first, branches second. Use whenever os_next emits the soundness-gate layer, before writing any PREREG that needs training, or when the user asks whether a problem or idea is sound.
 ---
 
 # Soundness 门（先杀 idea，再训练）
 
-**为什么**：过去的 idea 多数要训练一次才被杀（例如 A-50：告诉策略真实延迟并不消除名义代价）。很多可以提前从**代码和文献**判出来。
+**为什么**：很多 idea 要做一次实验（训练、湿实验、仿真、田野）才被杀，而其中不少可以提前从**代码 / 协议和文献**判出来。本门里的"训练"泛指任何花资源的实验。
 本门把"这个问题 / 这张卡站不站得住"交给一个**独立的验证器 agent**（`soundness-verifier`，Sol），它只打分、只判决，不提新点子。
 **验证器看不到我们的实验结果和跑分**（DIGEST、RESULT、runs、dump 一律不给）：否则就是用我们的跑分给我们的 idea 打分（reward hacking），而且对还没跑过的新 idea 根本杀不掉。它只用代码（`file:line`）和自己检索的文献（arXiv / OpenReview / 本地库）。
 "现象是否真实存在"仍由主会话按宪法实测，那是另一道关，不交给验证器。

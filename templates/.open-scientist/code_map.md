@@ -1,16 +1,14 @@
-# 代码地图（示例：SuperMimic）
+# 系统地图（代码 / 协议）
 
-| 环节 | 文件 | 常见的默认假设 |
+给验证器和经典建模层用：项目里哪些环节在哪里定义、每处默认接受了什么假设。**只写系统事实，不写实验结果和跑分**（交给验证器前删掉带结果的行）。
+有代码的项目写 `文件:函数`；湿实验、田野、理论项目写协议 / 配置 / 数据字典 / 方程的「文件 + 段落」。
+
+| 环节 | 位置（文件 / 函数，或协议段落） | 常见的默认假设 |
 |---|---|---|
-| 执行器 / 延迟 | `envs/actions.py`（`process_actions`、`executed_raw`、`delay_weights`） | 哪些执行器效应在 WM 外处理、哪些留给 WM 学 |
-| 环境 DR / 推扰 / 终止 | `envs/tracking_env_cfg.py`、`envs/mdp/events.py`、`envs/mdp/terminations.py` | 哪些扰动被删掉、哪些只按 episode 抽一次 |
-| sim context | `envs/sim_context.py` | ξ 只含摩擦 / 偏置 / 质心 |
-| 记录 / 回放 | `data/recorder.py`、`data/replay_buffer.py`（`window_mask`、`sample_windows`、`sample_starts`） | 窗口与起点的采样规则、标签对齐（已知终止标签错位一步） |
-| WM | `world_model/world_model.py`（`window_loss`）、`state_spec.py`、`dynamics.py` | 回归目标里包含了什么 |
-| 想象 | `imagination/rollout.py`（`imagine`）、`compiled.py` | 想象上下文 = 采集上下文、起点分布 |
-| 目标 / critic | `imagination/objective.py`、`imagination/policy_trainer.py`、`policy/nets.py`（`Critic`） | 对上下文取期望的单一目标、critic 只看 ξ |
-| 课程采样 | `envs/mdp/commands.py`（`_sample_frames`、`bin_return`） | 回报统计不分上下文 |
-| 评测 / 部署 | `research/diag/e7_deploy.py`、`scripts/eval_*.py` | 部署时 WM 被丢掉、里程计只认脚 |
+| 数据 / 样本从哪里来 | | 采样规则、覆盖了哪些情形、标签怎样对齐 |
+| 模型 / 理论对象 | | 拟合或推导的目标里包含了什么、遗漏了什么 |
+| 方法的改进信号 | | 信号从哪里来、在哪些状态 / 条件下可信 |
+| 目标 / 指标的定义 | | 怎样归一化、按什么条件筛选 |
+| 评测 / 对照 | | 对照能否做出来、有没有选择偏差 |
 
-首例：IdeaSpark run `supermimic-robust-nominal-tradeoff` → `research/exp/A-38-tradeoff/ASSUMPTIONS.zh.md`（U1–U6）。
-准入审计：A-39 执行器分解（oracle 施加力矩）、A-40 配对想象（Spearman 0.69）、U6 采样器（排除）。
+已知问题（代码或协议层面，非实验结果）：

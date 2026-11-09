@@ -1,6 +1,6 @@
 ---
 name: mainline
-description: Mainline-first problem formulation (Open Scientist 0.7). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses) followed by a crux validation against our claims, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
+description: Mainline-first problem formulation (Open Scientist 0.8). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses) followed by a crux validation against our claims, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
 ---
 
 # 主线优先（Problem formulation → bottleneck → causal structure）

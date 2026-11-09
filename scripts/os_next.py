@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Open Scientist 0.7 navigator: ResearchStudio idea_spark (upstream #63 quality flow) is the backbone;
+"""Open Scientist 0.8 navigator: ResearchStudio idea_spark (upstream #63 quality flow) is the backbone;
 layers of three kinds are inserted around it — constrain (fixes what RS works on), verify (kills / admits),
 rank (orders what survived) — plus the classical-modeling layer, the solution-side core.
 

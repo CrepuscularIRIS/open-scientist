@@ -1,9 +1,11 @@
 ---
 name: open-scientist
-description: Orchestrator for research idea generation and selection (Open Scientist 0.7). ResearchStudio idea_spark (synced to upstream #63) is the generator; Open Scientist inserts layers of three kinds at phase boundaries — RANK (mainline-first problem formulation; problem-selection over a cross-run card registry), VERIFY (an independent soundness verifier on code + literature only, never the project's own scores, at gap / mechanism / card level, plus phenomenon admission and a once-per-project protocol audit), and the solution-side core MODEL layer (classical-theory recall and modeling: original problem → construction → preserved property → mapping, to the user's Q1–Q8 standard), whose construction RS Phase 2 must transport. Use when the user wants to pick a research direction, draw an idea card, rank candidate methods or cards, or continue an IdeaSpark run.
+description: Orchestrator for research idea generation and selection (Open Scientist 0.8). ResearchStudio idea_spark (synced to upstream #63) is the generator; Open Scientist inserts layers of three kinds at phase boundaries — RANK (mainline-first problem formulation; problem-selection over a cross-run card registry), VERIFY (an independent soundness verifier on code + literature only, never the project's own scores, at gap / mechanism / card level, plus phenomenon admission and a once-per-project protocol audit), and the solution-side core MODEL layer (classical-theory recall and modeling: original problem → construction → preserved property → mapping, to the user's Q1–Q8 standard), whose construction RS Phase 2 must transport. Use when the user wants to pick a research direction, draw an idea card, rank candidate methods or cards, or continue an IdeaSpark run.
 ---
 
-# Open Scientist 0.7：RS 生成 + 三类插入层（排序 / 验证 / 经典建模）
+# Open Scientist 0.8：RS 生成 + 三类插入层（排序 / 验证 / 经典建模）
+
+**通用**：插件对任意领域都适用；领域内容只放在 `<project>/.open-scientist/`。非 ML 领域设 `OPEN_SCIENTIST_DOMAIN=general`（检索 = arXiv + OpenReview），验证器的证据可以是协议 / 配置 / 方程等系统事实（见 README「用于任意领域」）。
 
 **一句话**：ResearchStudio（RS，已同步上游 #63）负责生成：检索、诊断、生成、一致性检查、审查、写卡。Open Scientist 在 phase 边界插入三类层，再加两份覆盖 RS prompt 的 overlay（约束）：
 1. **排序（rank）**：问题侧用 `mainline`（一条主线、≤2 条因果相连的支线；每个 bottleneck 一个 RS run），卡侧用 `problem-selection`（只排没被杀的卡，按步骤 H 六项）。挑问题**不用** research taste。

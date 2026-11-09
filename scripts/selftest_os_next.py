@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Self-test of os_next.py (Open Scientist 0.7). No arguments, no network.
+"""Self-test of os_next.py (Open Scientist 0.8). No arguments, no network.
 
 1. Label guard: every RS label os_next keys on still exists in the bundled RS source (an upstream rename must
    fail here, not silently skip a layer).
@@ -94,7 +94,7 @@ def main() -> int:
             {"obj_id": "c", "tier": "priority"}, {"obj_id": "d", "tier": "not_fit"}]}))
         full = {"anchor": {"authors": "Ng, Harada, Russell", "year": 1999, "venue": "ICML", "url": "u", "read_location": "Thm 1"},
                 "construction": "x", "property": "y", "conditions": ["z"], "mismatch": ["m"], "entry": "e",
-                "cost": {"params": "0", "fwd_bwd": "0", "rollouts": "0", "storage": "0"}, "refuted_by": "r", "status": "modeled"}
+                "cost": {"params": "0", "compute": "0", "data": "0", "storage": "0"}, "refuted_by": "r", "status": "modeled"}
         md = "[原理论] ... [迁移推导] ..."
         cd.joinpath("a.json").write_text(json.dumps(full)); cd.joinpath("a.md").write_text(md)
         cd.joinpath("b.json").write_text(json.dumps({**full, "status": "lead"})); cd.joinpath("b.md").write_text(md)
@@ -104,6 +104,17 @@ def main() -> int:
         check("classical_check: abstract-only -> lead", r["b"]["status"] == "lead")
         check("classical_check: no mismatch -> incomplete", r["c"]["status"] == "incomplete" and "mismatch" in r["c"]["missing"])
         check("classical_check: non-priority ignored", "d" not in r)
+    import os, subprocess  # noqa: E401,E402
+    probe = ("import sys; sys.path.insert(0, '.'); import scripts.run as r; "
+             "print(sorted(c[0] for c in r.CONNECTORS), sorted(r._resolve_pool_caps()))")
+    rsd = N.ROOT / "skills" / "idea-spark"
+    for dom, want in (("ml", "['arxiv', 'local', 'openreview']"), ("general", "['arxiv', 'openreview']")):
+        out = subprocess.run([sys.executable, "-c", probe], cwd=rsd, capture_output=True, text=True,
+                             env={**os.environ, "OPEN_SCIENTIST_DOMAIN": dom}).stdout
+        check(f"domain {dom}: connectors {want}", out.startswith(want))
+    bad = subprocess.run([sys.executable, "-c", probe], cwd=rsd, capture_output=True, text=True,
+                         env={**os.environ, "OPEN_SCIENTIST_DOMAIN": "bio"})
+    check("domain switch rejects unknown value", bad.returncode != 0)
     print("SELFTEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
