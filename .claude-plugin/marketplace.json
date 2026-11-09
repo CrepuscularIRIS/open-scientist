@@ -7,7 +7,7 @@
     {
       "name": "open-scientist",
       "source": "./",
-      "description": "ResearchStudio + research-taste selection layers (0.4)",
+      "description": "General-purpose research plugin (0.8): ResearchStudio generation + rank / verify / classical-modeling layers",
       "version": "0.8.0"
     }
   ],
