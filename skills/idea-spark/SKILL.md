@@ -8,7 +8,7 @@ description: >-
   brainstorming without research context.
 ---
 
-> **Open Scientist 0.6 build** (upstream ResearchStudio #63 + our retrieval patches: local-corpus jobs, Semantic Scholar off, `.env` from `~/.config/open-scientist`). Drive runs with the plugin's `scripts/os_next.py`, not this file's `next` alone: os_next inserts the mainline layer before Phase 1, the soundness gate + solution lens before Phase 2, the card gate + selection before Phase 4, and attaches `overlays/phase1.md` / `overlays/generation.md`, which override this skill's prompts where they conflict.
+> **Open Scientist 0.7 build** (upstream ResearchStudio #63 + our retrieval patches: local-corpus jobs, Semantic Scholar off, `.env` from `~/.config/open-scientist`). Drive runs with the plugin's `scripts/os_next.py`, not this file's `next` alone: os_next inserts the mainline layer before Phase 1, the soundness gate + phenomenon admission + classical-recall (modeling) layer before Phase 2, a mechanism-level verifier check before collision, the protocol audit + card gate + selection before Phase 4, and attaches `overlays/phase1.md` / `overlays/generation.md`, which override this skill's prompts where they conflict.
 
 
 # Idea Spark

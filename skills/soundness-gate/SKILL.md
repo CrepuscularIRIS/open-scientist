@@ -1,6 +1,6 @@
 ---
 name: soundness-gate
-description: Kill ideas before training (Open Scientist 0.6). Host procedure that sends each RS gap (after Phase 1) and each RS card (after Phase 3) to the independent soundness-verifier agent, one isolated call per claim, then applies the mechanical KILL / CHECK / PASS rule. The verifier sees only code and literature, never the project's own results or scores (no reward hacking); and rewrites the gap list / card list ordered mainline first, branches second. Use whenever os_next emits the soundness-gate layer, before writing any PREREG that needs training, or when the user asks whether a problem or idea is sound.
+description: Kill ideas before training (Open Scientist 0.7). Host procedure that sends each RS gap (after Phase 1), each candidate mechanism (after the coherence gate, before collision) and each RS card (after Phase 3) to the independent soundness-verifier agent, one isolated call per claim, then applies the mechanical KILL / CHECK / PASS rule. The verifier sees only code and literature, never the project's own results or scores (no reward hacking); and rewrites the gap list / card list ordered mainline first, branches second. Use whenever os_next emits the soundness-gate layer, before writing any PREREG that needs training, or when the user asks whether a problem or idea is sound.
 ---
 
 # Soundness 门（先杀 idea，再训练）
@@ -11,13 +11,16 @@ description: Kill ideas before training (Open Scientist 0.6). Host procedure tha
 "现象是否真实存在"仍由主会话按宪法实测，那是另一道关，不交给验证器。
 RS 仍然负责生成；本门只删除和排序，不新增 claim。
 
-**任何 idea 都要过**：除了下表两个位置，主会话自己想的、用户提的、执行中临时冒出的改法，写 PREREG 之前都按卡级派一次验证器。
+**任何 idea 都要过**：除了下表几个位置，主会话自己想的、用户提的、执行中临时冒出的改法，写 PREREG 之前都按卡级派一次验证器。
 
-## 两个位置
+## 位置（本门只**验证**：杀 / 准入；排序由 mainline 与 problem-selection 负责）
 | 位置 | 输入的 claim | 产物 / 完成标记 |
 |---|---|---|
-| **Phase 1 → 2**（gap 级） | `phase1_output.json` 的每条 gap（含 k3.1 合并进来的） | `phase1/soundness_gaps.json`、`phase1/.gap_filter_done` |
-| **Phase 3 → 4**（卡级） | `final_candidate.json` / `refined_candidate.json`，以及 `mainline.md` 里在册、还没测过的卡 | `soundness_cards.json`，然后才写 `selection.json` |
+| **Phase 1 → 2**（gap 级，S1–S5） | `phase1_output.json` 的每条 gap（含 k3.1 合并进来的） | `phase1/soundness_gaps.json`、`phase1/.gap_filter_done` |
+| **Phase 1 → 2**（现象准入，主会话） | 保留下来的每条 gap | `phase1/admission.json` |
+| **2.3 之后、碰撞之前**（机制级，只评 S1 / S2 / S7） | 规范候选（`refined_candidate.json` / `repaired_candidate.json`）+ 它用的经典锚点 | `soundness_early.json`（KILL → 不跑 Phase 3） |
+| **Phase 4 之前**（协议级，项目一次） | 项目的评测工具与判据脚本 | `<project>/.open-scientist/protocol_audit.json` |
+| **Phase 3 → 4**（卡级，S1–S6，带锚点加 S7） | `final_candidate.json` / `refined_candidate.json`，以及 `mainline.md` 里在册、还没测过的卡 | `soundness_cards.json`，然后才写 `selection.json` |
 
 ## 流程
 1. **列 claim**：每条 gap / 卡一个 id，附上 `phase0/mainline_first.json` 给它定的主线 / 支线位置。
@@ -29,11 +32,13 @@ RS 仍然负责生成；本门只删除和排序，不新增 claim。
    - KILL → 从列表移除，原文和理由留在 `soundness_*.json` 的 `killed[]`；
    - CHECK → 按 `decisive_unknown` 补一次**材料**（指向它没找到的代码位置，或补一组检索 query；仍然不给跑分），重派一次验证器（新 context）。第二次出 0 → KILL；仍是 CHECK（无 0）→ gap 级照常进 Phase 2，卡级标 `single_run`：允许**一次**单跑实验定对错（PREREG 写明 decisive_unknown）；
    - PASS → 保留。
-4. **排序（主线优先）**：保留的条目先按 `mainline_relation` 分组（mainline → branch → unrelated），组内按 `total/max` 降序。unrelated 只在主线和支线都空时才进 Phase 2。
+4. **机械排列（不是判断）**：保留的条目按 `mainline_relation` 分组（mainline → branch → unrelated），组内按 `total/max` 降序。这只是把 mainline 层已定的位置照抄成顺序，本门不做排序判断。unrelated 只在主线和支线都空时才进 Phase 2。
 5. **写回**：
    - gap 级：保留条目写进 `phase1_output.json` 的 `what_phase_0_did_not_address`（原列表另存 `*_unfiltered`），`touch phase1/.gap_filter_done`；
    - 卡级：写 `soundness_cards.json`，再按 `problem-selection` 只对 PASS 的卡排序、定第一个证伪实验。
-5b. **现象准入**（gap 级，主会话做，不交给验证器）：每条保留的 gap 要有本机实测（FACTS 里的一行）或一个已排队的最小测量；写进 `soundness_gaps.json` 每条的 `phenomenon: measured|pending`。`pending` 的 gap 可以进 Phase 2，但对应的卡在测量出来之前不开训练。
+5b. **现象准入**（gap 级，主会话做，不交给验证器；单独的完成标记）：每条保留的 gap 要有本机实测（引用 FACTS 的一行）或一个已排队的最小测量。写 `phase1/admission.json`：`{"gaps": [{"id", "phenomenon": "measured|pending", "evidence": "facts.md 的行 / 测量脚本"}]}`。`pending` 的 gap 可以进 Phase 2，但对应的卡在测量出来之前不开训练。
+5b'. **机制级**（2.3 之后）：claim = 规范候选的机制 + `intervention_object` + 经典锚点（`classical_report` 指向 `phase1/classical/<obj_id>.md`），`level=mechanism`，只评 S1 / S2 / S7。KILL → `soundness_early.json` 顶层写 `"verdict": "KILL"` 与 `kill_reasons`（os_next 停在 CARD_KILLED，省掉整套 Phase 3）；CHECK / PASS → 照常进碰撞。RS 走 ABANDON 重生成新候选时，删掉 `soundness_early.json`，让新候选重判。
+5b''. **协议级**（项目一次；评测工具改动后重做）：把项目的判据脚本（例如固定口径配对判决、探针）作为一条 `level=card` 的 claim，只评 S6（加强化规则 4 的协议审计）。结论写 `protocol_audit.json`：`{"tools": [{"path", "verdict", "issues"}], "date"}`。以后卡级 S6 只核卡自己的指标与对照，工具本身的口径引用这里的结论。
 5c. **卡登记**（卡级）：每张卡的判决追加到 `<project>/.open-scientist/cards.json`（`{"cards": [{"id", "run", "title", "target", "verdict", "total", "max", "decisive_unknown", "date", "outcome": null}]}`）；实验出结果后填 `outcome`，并在 `verifier_log.md` 记一行。
 5d. **KILL 之后**：卡级 KILL → 不写卡、不训练；`soundness_cards.json` 顶层写 `"verdict": "KILL"` 和 `kill_reasons`，os_next 会停在 CARD_KILLED，提示在同一 target 上开新 run（kill_reasons 写进 query 作为负约束）。同一 bottleneck 连续 2 个 run 被杀 → 回 `mainline` 层。gap 级全部 KILL → 本 run 停止，回 `mainline` 层重定 target。
 6. **汇报**：一张表：claim、主线 / 支线、分数、判决、一句理由。结论先行，[实测] / [猜测] 分标。
@@ -42,7 +47,7 @@ RS 仍然负责生成；本门只删除和排序，不新增 claim。
 - 验证器的判决只能被**新证据**推翻（新代码事实、新文献、单跑实验的结果），不能被主会话或 RS 的论证推翻。实验结果用来回测验证器，不回喂给它。
 - 不追问"有没有更本质的问题"。主线只在新证据推翻时才改（见 `mainline` skill）。
 - 训练只给 PASS 和 `single_run` 的卡；KILL 的不训。PASS 可以直接开跑；`single_run` 只给一次，结果决定去留。单卡实验的预期结果也写进 PREREG，作为对验证器的回测。
-- 回测：每次实验结束，把实际结论与验证器当时的判决对比，记进 `<project>/.open-scientist/verifier_log.md`（一行一条：claim、判决、实际结果、对 / 错）。错判多的那一项，说明评分表要改。
+- 回测：每次实验结束，把实际结论与验证器当时的判决对比，记进 `<project>/.open-scientist/verifier_log.md`（一行一条：claim、判决、实际结果、对 / 错）。**只有两种判决可检验**：KILL（被杀的 idea 若后来在别处被证明有效 = 误杀）和对已知赢家的校准（不误杀）。CHECK / single_run 的卡无论单跑成败都记 `n/a`，不记"对"——验证器只杀不排，它的分数不预测效果。错判集中在某一项，说明评分表那一项要改。
 
 **成熟方法槽不走 RS 生成**：主线 / 支线里用别人成熟方法解决的那条，直接把"在本设置用方法 X 解 bottleneck Y"作为一张卡送验证器（卡级），PASS / CHECK 后写 PREREG；不跑 RS Phase 2–4（RS 的新颖性 hard floor 只适用于我们自己的 1–2 个切入）。
 

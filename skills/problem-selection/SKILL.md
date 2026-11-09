@@ -22,14 +22,18 @@ description: Rank research cards and candidate methods, decide go / no-go and th
 1. **列出所有候选**：本轮的卡（`final_candidate.json` 或 `refined_candidate.json`），以及项目里其他在册的卡和候选方法（`<project>/.open-scientist/mainline.md`）。
 2. **每张卡的假设表**：对每个关键假设打 1–5 分（1 是 >90% 把握，5 是 <10%），分清"现象假设"和"技术可行性假设"，注明是否已有实测或离线准入。
    - 两个以上 4–5 分的假设属于"多个奇迹"，要么回避，要么先做细化。
-3. **两轴打分**：
-   - 成功概率：由风险表推出；
-   - 成功后的影响：对项目目标函数的贡献，例如能否越过 Pareto 判据、能否成为三瓶颈之一。
-   各给一句理由。
+3. **步骤 H 六项横向比较**（经典建模手册 §5 步骤 H，见 `skills/classical-recall/references/modeling-standard.md`；每项一句，有依据）：
+   - **贴切**：卡的构造与目标 bottleneck 的结构是否对上（引经典锚点的映射表与失配）；
+   - **新约束**：它给训练带来了什么原来没有的约束 / 保持性质；
+   - **信号可得**：所需的量在代码里拿得到，还是要补 oracle / 代理（代理先损坏哪条结论）；
+   - **误差损坏什么**：代理或失配出错时先坏哪一条结论；
+   - **最轻实现成本**：新增参数、前向/反向、额外 rollout、存储（参数少与计算便宜分开记）；
+   - **怎样被推翻**：最小反例与第一个证伪实验。
+   再由风险表给成功概率，由是否作用在主线上给影响（主线 > 支线 > 其他）。
 4. **go / no-go 与第一个实验**：为风险最高的那个假设设计最便宜的检验，离线优先。写清通过和否决的条件。
-5. **排序**：先按"影响 × 成功概率"，再按第一个实验的成本。输出排序表和推荐的下一步。
+5. **排序**：先按"影响 × 成功概率"，平手看六项里"信号可得"与"最轻成本"，再按第一个实验的成本。输出排序表和推荐的下一步。
 
-`selection.json` 的格式：`{"cards": [{"id", "title", "assumptions": [{"text", "kind": "phenomenon|technical", "risk": 1-5, "evidence"}], "p_success", "impact", "first_test": {"what", "admit", "reject", "cost"}, "rank"}], "recommendation"}`。
+`selection.json` 的格式：`{"cards": [{"id", "title", "assumptions": [{"text", "kind": "phenomenon|technical", "risk": 1-5, "evidence"}], "h_axes": {"fit", "new_constraint", "signal", "error_damages", "cost", "refutation"}, "p_success", "impact", "first_test": {"what", "admit", "reject", "cost"}, "rank"}], "recommendation"}`。
 
 ## 规则
 - 打分要有依据。没有实测就写"未测"，不凭印象打低风险。

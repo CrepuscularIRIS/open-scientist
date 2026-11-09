@@ -1,7 +1,7 @@
 {
   "name": "open-scientist",
-  "version": "0.6.0",
-  "description": "ResearchStudio idea_spark (synced to upstream #63: versioned quality flow, formula repair, intervention_object) as the generator, with a mainline-first formulation (blind first pass + crux validation: one mainline, at most two causally linked branches; one RS run per bottleneck), an independent soundness verifier (code + literature only, never the project's own scores) that kills every idea before training, solution-side research taste (15 innovation types rank solution angles only), and problem-selection over a cross-run card registry.",
+  "version": "0.7.0",
+  "description": "ResearchStudio idea_spark (synced to upstream #63) as the generator, with layers of three declared kinds inserted at phase boundaries: rank (mainline-first problem formulation; problem-selection over a cross-run card registry), verify (an independent soundness verifier on code + literature only — never the project's own scores — at gap, mechanism and card level, plus phenomenon admission and a protocol audit), and the solution-side core: classical-theory recall and modeling (original problem → construction → preserved property → mapping) whose construction RS Phase 2 transports.",
   "author": {
     "name": "CrepuscularIRIS"
   },

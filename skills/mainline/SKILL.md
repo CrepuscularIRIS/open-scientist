@@ -1,13 +1,13 @@
 ---
 name: mainline
-description: Mainline-first problem formulation (Open Scientist 0.6). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses) followed by a crux validation against our claims, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
+description: Mainline-first problem formulation (Open Scientist 0.7). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses) followed by a crux validation against our claims, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
 ---
 
 # 主线优先（Problem formulation → bottleneck → causal structure）
 
 **要的能力**：在既定目标下，找出**哪个约束决定了整个系统的上限**，并把其他问题组织成围绕它的因果结构；不是平铺"有哪些挑战"，也不是一路追问"更本质"。
 
-**问题侧只用主线 / 支线挑 bottleneck，不用 research taste**（用户 2026-11-08）。按"哪类贡献好看"去挑问题，就是从方法反推问题；15 种创新类型只在解法侧用（`innovation-lens`，soundness 门之后）。
+**问题侧只用主线 / 支线挑 bottleneck，不用 research taste**（用户 2026-11-08）。按"哪类贡献好看"去挑问题，就是从方法反推问题；解法侧由 `classical-recall`（经典建模，soundness 门之后）负责。
 
 **"最接近本质"的判据**（用来停止抽象，而不是无限往上抽）：主线是能满足下面四条的**最小充分**表述，
 ① 能把最多条 FACTS 解释为它的后果（其余问题是它的下游或并列支线）；
@@ -20,7 +20,7 @@ description: Mainline-first problem formulation (Open Scientist 0.6). Before RS 
 ## 两轮（位置：RS Phase 0 结束、Phase 1 开始之前；产物 `phase0/mainline_first.json`）
 
 ### 第 1 轮：盲测首轮（Blind First Pass）
-一个隔离 sub-agent（`model=fable`），**只给**：
+一个隔离 sub-agent（`model=sonnet`，推理档；Crux 校验才是设计档），**只给**：
 - GOAL（`mainline.md` 的"目标函数"一节，原文）；
 - FACTS（`facts.md`，只保留带出处的 [实测] 行）；
 - 文献池（`phase0/lit_table.md`）和 `code_map.md`。
@@ -54,12 +54,18 @@ prompt 要点（照抄）：
 Crux 校验给出的主线和每条支线，各作为一条 gap 级 claim 送 `soundness-gate`（验证器只看代码 + 文献）。主线被 KILL → 主线改为次优候选，并在变更记录里写明。
 
 ## 一个 bottleneck 一个 RS run
-RS 一次只出一个 anchor 的卡。主线和每条支线各开一个 RS run（`ideaspark_run/<slug>-main`、`-b1`、`-b2`），`phase0/user_query.txt` 第一行写 `TARGET: mainline | branch:1 | branch:2`；同一份 `mainline_first.json` 复制进每个 run 的 `phase0/`。用成熟方法解的那条不开 RS run（见 `soundness-gate`）。
+RS 一次只出一个 anchor 的卡。主线和每条支线各开一个 RS run（`ideaspark_run/<slug>-main`、`-b1`、`-b2`），`phase0/user_query.txt` 第一行写 `TARGET: mainline | branch:1 | branch:2`；同一份 `mainline_first.json` 复制进每个 run 的 `phase0/`。
+
+**问题卡**（经典建模手册 §5 步骤 A，写在 `TARGET:` 行之后、事实之前；`classical-recall` 和验证器都读它）：
+- **现象来源**：真实轨迹 / 实测（引 facts.md 的行）/ 文献 / 假想小例子，写明是哪一种；
+- **一句话困难**：不先给它起方法名（不能先叫它 credit assignment，再用名字证明需要新信用算法）；
+- **两个竞争解释**：能导致同样表现的另外两种原因；
+- **切分 / 参照 / 货币**：哪个行动块是单位；相对哪种替代或后续策略比较；用什么量结算（真实回报、存活、跟踪误差……）。三者都可以是设计选择。用成熟方法解的那条不开 RS run（见 `soundness-gate`）。
 
 ## 下游怎么用
 - RS Phase 1 拿到 `mainline_first.json` 作为附加输入：gap 要标出属于主线、哪条支线，或与主线无关。
 - `soundness-gate` 用它给每条 gap / 卡定主线位置；排序时主线优先，支线其次。
-- `innovation-lens`（解法侧）只给已准入的主线 / 支线排解决角度，主线先排。
+- `classical-recall`（解法侧）只给已准入的主线 / 支线找经典原问题并建模，主线先做。
 - `problem-selection` 的"影响"一项，按"是否作用在主线上"打分。
 
 ## 主线什么时候能改
