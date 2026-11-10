@@ -1,4 +1,4 @@
-# Open Scientist 0.8
+# Open Scientist 0.9
 
 **通用科研插件：对任意领域都适用**（ML、机器人、生物、物理、经济、控制……）。领域专属的东西只放在项目的 `<project>/.open-scientist/` 里（目标函数、主线、实测事实、系统地图），插件本身不带任何项目内容。
 
@@ -11,12 +11,12 @@
 | 位置 | 层 | 类型 |
 |---|---|---|
 | 开 run 前 | 问题卡（`TARGET:` + 现象来源、竞争解释、切分 / 参照 / 货币） | 约束 |
-| Phase 0 → 1 | `mainline` | 排序 |
+| Phase 0 → 1 | `mainline`（盲测 → Crux → 因果排序检验：候选锚到基线论文章节 + 代码行） | 排序 + 验证 |
 | Phase 1 | `overlays/phase1.md`（瓶颈是给定的） | 约束 |
-| Phase 1 → 2 | `soundness-gate`（gap 级）→ 现象准入 → `classical-recall` | 验证 → 验证 → 建模 |
+| Phase 1 → 2 | `soundness-gate`（gap 级）→ 现象准入 → `classical-recall` → `property-test`（仅 ml 域：锚点性质训练前快检一次） | 验证 → 验证 → 建模 → 验证 |
 | Phase 2.1–2.2 | `overlays/generation.md`（gap 顺序、搬经典构造） | 约束 |
 | 2.3 → 碰撞 | `soundness-gate`（机制级 S1 / S2 / S7；KILL 省掉 Phase 3） | 验证 |
-| Phase 3 → 4 | `soundness-gate`（协议级，项目一次；卡级）→ `problem-selection` | 验证 → 排序 |
+| Phase 3 → 4 | `soundness-gate`（协议级：评测工具按 sha256 钉死，改了即重审；卡级）→ `problem-selection` | 验证 → 排序 |
 
 ## 用于任意领域
 - **检索开关** `OPEN_SCIENTIST_DOMAIN`：`ml`（默认）= arXiv + OpenReview + 本地 ML 会议语料库；`general` = **arXiv + OpenReview**（去掉只覆盖 ML 会议、且依赖本机索引的本地语料库；arXiv 加一个 6–24 个月的较早窗口）。不用 OpenAlex / Semantic Scholar。

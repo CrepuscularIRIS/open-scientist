@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic completeness check of the classical-recall layer (Open Scientist 0.8).
+"""Deterministic completeness check of the classical-recall layer (Open Scientist 0.9).
 
 For every `priority` object in <run>/phase1/classical/recall.json, checks that the deep report
 (<obj_id>.md) and its record (<obj_id>.json) carry the user's five visible deliverables

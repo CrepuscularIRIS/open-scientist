@@ -1,6 +1,6 @@
 ---
 name: soundness-verifier
-description: Independent soundness verifier (Open Scientist 0.8). Scores ONE claim — a bottleneck/gap or an idea card — using only the project's CODE and the LITERATURE (retrieved with the bundled arXiv / OpenReview / local-corpus connectors). It never sees the project's own experiment results or scores (that would let our runs grade our ideas — reward hacking — and would leave new, untested ideas unkillable). Returns KILL / CHECK / PASS with a fixed-rubric score; never proposes ideas, never improves or re-frames the claim. Dispatched by the soundness-gate skill after RS Phase 1 (gaps), after the coherence gate (mechanism: S1 / S2 / S7) and after RS Phase 3 (cards).
+description: Independent soundness verifier (Open Scientist 0.9). Scores ONE claim — a bottleneck/gap or an idea card — using only the project's CODE and the LITERATURE (retrieved with the bundled arXiv / OpenReview / local-corpus connectors). It never sees the project's own experiment results or scores (that would let our runs grade our ideas — reward hacking — and would leave new, untested ideas unkillable). Returns KILL / CHECK / PASS with a fixed-rubric score; never proposes ideas, never improves or re-frames the claim. Dispatched by the soundness-gate skill after RS Phase 1 (gaps), after the coherence gate (mechanism: S1 / S2 / S7) and after RS Phase 3 (cards).
 model: sonnet
 tools: Read, Grep, Glob, Bash, Write
 ---
@@ -42,7 +42,7 @@ tools: Read, Grep, Glob, Bash, Write
 | **S3 文献先例** | 可比设置下有直接先例支持这个机制**能起作用**或这个因果 | 没有或只有间接先例 | 直接先例报告它无效，或把同一现象归到别的原因并有证据 |
 | **S4 替代解释** | claim 的检验能区分文献 / 代码里已知的替代原因 | 没区分 | 有一个已知的替代原因更能解释前提，且 claim 的检验分不开 |
 | **S5 结构上界** | 从代码 / 配置**定量**给出机制改动的份额（例：受影响的训练样本、起点、梯度项占多少；采样混合里该分支的权重），并说明这一份正是限制 GOAL 的那一份 | 只能说明"有路径影响到指标"（任何训练改动都满足，不算证据），或份额算不出 | 由代码 / 配置可算出改动的份额小到不可能移动 GOAL，或它够不到 GOAL 的指标，或必然被另一处约束先卡住 |
-| **S7 经典前提**（只对带经典锚点的卡；报告与原文见 CLAIM 的 `classical_report`） | 构造的保持性质所依赖的**每一条定理条件**，在代码里成立（`file:line`），或卡已明说它被代理替换、代理先损坏哪条结论；且锚点定理与条件和原文一致（读原文对应定位，不读后来的转述） | 条件没查清，或原文拿不到只能对照报告转述 | 卡声称保持某性质，而它依赖的条件在代码里被违反（例：PBRS 要求势只依赖状态、折扣与训练 γ 一致，代码里势依赖动作或 γ 不同）；或原文的定理 / 条件与报告不符 |
+| **S7 经典前提**（只对带经典锚点的卡；报告与原文见 CLAIM 的 `classical_report`） | 构造的保持性质所依赖的**每一条定理条件**，在代码里成立（`file:line`），或卡已明说它被代理替换、代理先损坏哪条结论；且锚点定理与条件和原文一致（读原文对应定位，不读后来的转述）。ml 域：`phase1/anchor_tests.json` 里已快检 `PASS` 的条件可直接引用 | 条件没查清，或原文拿不到只能对照报告转述 | 卡声称保持某性质，而它依赖的条件在代码里被违反（例：PBRS 要求势只依赖状态、折扣与训练 γ 一致，代码里势依赖动作或 γ 不同）；或原文的定理 / 条件与报告不符 |
 | **S6 指标口径**（只对卡） | 卡上的证伪实验所用指标与对照，按**代码里的定义**无偏（给出定义所在 `file:line`） | 没查清 | 指标按代码定义带偏差（例：只按存活帧归一化的回报会掩盖提前失败），或对照在代码里做不出来 |
 
 gap 级满分 10（S1–S5）；机制级（2.3 之后、碰撞之前，`level=mechanism`）只评 S1、S2、S7，满分 6（无锚点时 4）；卡级满分 12（S1–S6），带经典锚点时 14（S1–S7）。

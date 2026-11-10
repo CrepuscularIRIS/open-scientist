@@ -1,9 +1,9 @@
 ---
 name: open-scientist
-description: Orchestrator for research idea generation and selection (Open Scientist 0.8). ResearchStudio idea_spark (synced to upstream #63) is the generator; Open Scientist inserts layers of three kinds at phase boundaries — RANK (mainline-first problem formulation; problem-selection over a cross-run card registry), VERIFY (an independent soundness verifier on code + literature only, never the project's own scores, at gap / mechanism / card level, plus phenomenon admission and a once-per-project protocol audit), and the solution-side core MODEL layer (classical-theory recall and modeling: original problem → construction → preserved property → mapping, to the user's Q1–Q8 standard), whose construction RS Phase 2 must transport. Use when the user wants to pick a research direction, draw an idea card, rank candidate methods or cards, or continue an IdeaSpark run.
+description: Orchestrator for research idea generation and selection (Open Scientist 0.9). ResearchStudio idea_spark (synced to upstream #63) is the generator; Open Scientist inserts layers of three kinds at phase boundaries — RANK (mainline-first problem formulation; problem-selection over a cross-run card registry), VERIFY (an independent soundness verifier on code + literature only, never the project's own scores, at gap / mechanism / card level, plus phenomenon admission and a once-per-project protocol audit), and the solution-side core MODEL layer (classical-theory recall and modeling: original problem → construction → preserved property → mapping, to the user's Q1–Q8 standard), whose construction RS Phase 2 must transport. Use when the user wants to pick a research direction, draw an idea card, rank candidate methods or cards, or continue an IdeaSpark run.
 ---
 
-# Open Scientist 0.8：RS 生成 + 三类插入层（排序 / 验证 / 经典建模）
+# Open Scientist 0.9：RS 生成 + 三类插入层（排序 / 验证 / 经典建模）
 
 **通用**：插件对任意领域都适用；领域内容只放在 `<project>/.open-scientist/`。非 ML 领域设 `OPEN_SCIENTIST_DOMAIN=general`（检索 = arXiv + OpenReview），验证器的证据可以是协议 / 配置 / 方程等系统事实（见 README「用于任意领域」）。
 
@@ -30,11 +30,12 @@ python3 "<plugin>/scripts/os_next.py" --dir "$PWD/ideaspark_run/<slug>" --projec
 |---|---|---|---|
 | 开 run 之前 | 每个 bottleneck 一个 run；query 第一行 `TARGET:`，接**问题卡**（现象来源、一句话困难、两个竞争解释、切分 / 参照 / 货币，见 `mainline`），正文带 `facts.md` 的实测事实 | 约束 | `phase0/user_query.txt` |
 | RS Phase 0 | 检索（arXiv + 本地库 + OpenReview）、0.4 分区、0.5 补漏、全文 | — | `phase0/` |
-| **Phase 0 → 1** | `mainline`：盲测首轮 → Crux 校验。项目第一次跑或有新证据时才做，否则复制已有的 `mainline_first.json` | 排序 | `phase0/mainline_first.json` |
+| **Phase 0 → 1** | `mainline`：盲测首轮 → Crux 校验 → 因果排序检验（隔离 Sol，每个候选锚到基线论文章节 + 代码 `file:line`，可改主线）。项目第一次跑或有新证据时才做，否则复制已有的两个产物 | 排序 + 验证 | `phase0/mainline_first.json`、`phase0/causal_order.json` |
 | RS Phase 1 | 在 target 内诊断 gap（`overlays/phase1.md`：主线是硬输入） | 约束 | `phase1/phase1_output.json` |
 | **Phase 1 → 2** | `soundness-gate`（gap 级） | 验证 | `soundness_gaps.json`、`.gap_filter_done` |
 | **Phase 1 → 2** | 现象准入（主会话实测或引 facts 行） | 验证 | `phase1/admission.json` |
 | **Phase 1 → 2** | `classical-recall`：宽 Recall → 每对象隔离建模（Q1–Q8）→ `classical_check.py` → 步骤 H 排序（自动，事后汇报） | 建模 | `phase1/classical/`、`classical_anchors.json` |
+| **Phase 1 → 2**（仅 ml 域） | `property-test`：每个锚点一个短脚本，在本项目代码 + 冻结 ckpt 上量一次声称的性质（不训练，分钟级）；明显失败的锚点剔除，量不出来的放行 | 验证（快检） | `anchor_tests.json`、`.property_tests_done` |
 | RS 2.1–2.3 | 选择 + 生成（`overlays/generation.md`：gap 顺序、搬经典构造）→ 一致性 / formula repair | 约束 | `phase2_*` |
 | **2.3 → 碰撞** | `soundness-gate`（机制级：S1 / S2 / S7） | 验证 | `soundness_early.json`（KILL → 停） |
 | RS Phase 3 | 碰撞 → 审查 → 修订 → post-revision 审查 | — | `phase3_*` |

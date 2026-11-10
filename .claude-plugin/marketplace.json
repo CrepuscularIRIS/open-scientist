@@ -7,8 +7,8 @@
     {
       "name": "open-scientist",
       "source": "./",
-      "description": "General-purpose research plugin (0.8): ResearchStudio generation + rank / verify / classical-modeling layers",
-      "version": "0.8.0"
+      "description": "Research plugin (0.9): ResearchStudio generation + rank / verify / classical-modeling layers; ml domain adds a quick pre-training property check",
+      "version": "0.9.0"
     }
   ],
   "description": "Open Scientist: ResearchStudio idea cards + research-taste selection layers"

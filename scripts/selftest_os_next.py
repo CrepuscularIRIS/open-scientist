@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Self-test of os_next.py (Open Scientist 0.8). No arguments, no network.
+"""Self-test of os_next.py (Open Scientist 0.9). No arguments, no network.
 
 1. Label guard: every RS label os_next keys on still exists in the bundled RS source (an upstream rename must
    fail here, not silently skip a layer).
@@ -46,7 +46,9 @@ def main() -> int:
         (run / "phase0").mkdir(parents=True)
         check("Phase 1 -> mainline layer", name(p1_step) == "mainline")
         (run / "phase0" / "mainline_first.json").write_text("{}")
-        check("mainline done -> RS Phase 1", name(p1_step) is None)
+        check("mainline done -> causal-order audit", name(p1_step) == "causal")
+        (run / "phase0" / "causal_order.json").write_text("{}")
+        check("causal-order done -> RS Phase 1", name(p1_step) is None)
         (run / "phase1").mkdir()
         (run / "phase1" / "phase1_output.json").write_text(json.dumps({"state": "proceed"}))
         check("Phase 1 proceed -> gap gate", name(prep_step) == "gaps")
@@ -55,7 +57,12 @@ def main() -> int:
         (run / "phase1" / "admission.json").write_text("{}")
         check("admission done -> classical", name(prep_step) == "classical")
         (run / "phase1" / "classical_anchors.json").write_text("{}")
-        check("classical done -> RS PREPARE", name(prep_step) is None)
+        check("classical done -> property test (ml)", name(prep_step) == "property")
+        N.DOMAIN = "general"
+        check("general domain skips property test", name(prep_step) is None)
+        N.DOMAIN = "ml"
+        (run / "phase1" / ".property_tests_done").write_text("")
+        check("property test done -> RS PREPARE", name(prep_step) is None)
         (run / "phase2_generate").mkdir()
         (run / "phase2_generate" / "closest_abstracts.json").write_text("{}")
         (run / "phase1" / "classical_anchors.json").unlink()
@@ -70,8 +77,18 @@ def main() -> int:
         (run / "soundness_early.json").write_text(json.dumps({"verdict": "CHECK"}))
         check("mechanism gate done -> RS collision", name(coll_step) is None)
         check("skeleton -> protocol audit (project-level)", name(skel_step) == "protocol")
-        (proj / ".open-scientist" / "protocol_audit.json").write_text("{}")
+        tool = proj / "tool.py"
+        tool.write_text("x = 1\n")
+        audit = proj / ".open-scientist" / "protocol_audit.json"
+        audit.write_text(json.dumps({"tools": [{"path": "tool.py", "verdict": "PASS"}]}))
+        check("audit without sha256 -> protocol still due", name(skel_step) == "protocol")
+        import hashlib  # noqa: E402
+        audit.write_text(json.dumps({"tools": [{"path": "tool.py", "verdict": "PASS",
+                                                "sha256": hashlib.sha256(tool.read_bytes()).hexdigest()}]}))
         check("protocol done -> card gate", name(skel_step) == "cards")
+        tool.write_text("x = 2\n")
+        check("edited tool -> protocol audit stale", name(skel_step) == "protocol")
+        tool.write_text("x = 1\n")
         (run / "soundness_cards.json").write_text(json.dumps({"verdict": "CHECK"}))
         check("card gate done -> selection", name(skel_step) == "select")
         (run / "selection.json").write_text("{}")
@@ -85,6 +102,19 @@ def main() -> int:
         check("card KILL -> terminal", N.killed(run) == run / "soundness_cards.json")
         for L in N.LAYERS:
             check(f"layer {L['name']} has a kind", L.get("kind") in ("rank", "verify", "model"))
+
+        import property_check as P  # noqa: E402
+        (run / "phase1" / "anchor_tests.json").write_text(json.dumps({"tests": [
+            {"obj_id": "ok", "T2": {"pass": True}}, {"obj_id": "kill", "T2": {"pass": False}},
+            {"obj_id": "unt", "T2": {"pass": None}}, {"obj_id": "none"}]}))
+        v = P.check(run)
+        check("property_check: verdicts", v == {"ok": "PASS", "kill": "KILL", "unt": "UNTESTABLE", "none": "UNTESTABLE"})
+        (run / "phase1" / "classical_anchors.json").write_text(json.dumps(
+            {"order": [{"obj_id": "ok"}, {"obj_id": "kill"}, {"obj_id": "unt"}]}))
+        P.rewrite_anchors(run, v)
+        an = json.loads((run / "phase1" / "classical_anchors.json").read_text())
+        check("property_check: KILL pruned from order, kept in killed_by_test",
+              [o["obj_id"] for o in an["order"]] == ["ok", "unt"] and an["killed_by_test"] == ["kill"])
 
         import classical_check as C  # noqa: E402
         cd = run / "phase1" / "classical"

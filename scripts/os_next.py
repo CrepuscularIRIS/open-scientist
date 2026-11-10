@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Open Scientist 0.8 navigator: ResearchStudio idea_spark (upstream #63 quality flow) is the backbone;
+"""Open Scientist 0.9 navigator: ResearchStudio idea_spark (upstream #63 quality flow) is the backbone;
 layers of three kinds are inserted around it — constrain (fixes what RS works on), verify (kills / admits),
 rank (orders what survived) — plus the classical-modeling layer, the solution-side core.
 
@@ -8,11 +8,13 @@ run's artifacts, and emits a layer step when one is due; otherwise it passes the
 layer outputs (and the overlay prompts in `overlays/`) as extra inputs where RS should read them.
 
   RS step "Phase 1 — bottleneck identification",   no phase0/mainline_first.json        -> mainline        (rank)
+  same,                                            no phase0/causal_order.json          -> causal-order    (verify; Sol, paper+code anchored)
   Phase 1 proceed, Phase 2 not materialised,       no phase1/.gap_filter_done           -> soundness-gate  (verify, gap)
   same,                                            no phase1/admission.json             -> admission       (verify, measured)
   same,                                            no phase1/classical_anchors.json     -> classical-recall (model)
+  same, domain ml,                                 no phase1/.property_tests_done       -> property-test   (verify, quick script)
   RS step "Run existing dual-channel collision",   no soundness_early.json              -> soundness-gate  (verify, mechanism; before Phase 3)
-  RS step "Build the technical skeleton ...",      no <project>/.open-scientist/protocol_audit.json -> soundness-gate (verify, protocol; once per project)
+  RS step "Build the technical skeleton ...",      protocol_audit.json missing or a tool's sha256 changed -> soundness-gate (verify, protocol)
   same,                                            no soundness_cards.json              -> soundness-gate  (verify, card)
   same,                                            no selection.json                    -> problem-selection (rank)
   soundness_early.json / soundness_cards.json says KILL                                 -> terminal: new run
@@ -26,7 +28,9 @@ Usage: python3 scripts/os_next.py --dir <run_dir> [--query "..."] [--project <pr
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -62,6 +66,21 @@ def before_phase2(run: Path) -> bool:
         and not (run / ".quality" / "generation").exists()
 
 
+DOMAIN = os.environ.get("OPEN_SCIENTIST_DOMAIN", "ml").strip().lower() or "ml"
+
+
+def protocol_stale(proj: Path) -> bool:
+    """No audit yet, or an audited tool's file no longer matches its recorded sha256 (0.9: tools are hash-pinned)."""
+    audit = _read(proj / ".open-scientist" / "protocol_audit.json")
+    if not audit:
+        return True
+    for t in audit.get("tools", []):
+        f = proj / str(t.get("path", "")).split(" ")[0]
+        if not t.get("sha256") or not f.is_file() or hashlib.sha256(f.read_bytes()).hexdigest() != t["sha256"]:
+            return True
+    return False
+
+
 def proj_files(proj: Path, *names: str) -> list[Path]:
     return [proj / ".open-scientist" / n for n in names]
 
@@ -74,9 +93,19 @@ LAYERS = [  # checked in order; the first due layer is emitted. kind: rank | ver
      "due": lambda run, step, proj: LBL_PHASE1 in step and not (run / "phase0" / "mainline_first.json").exists(),
      "title": "Open Scientist layer — mainline-first formulation (blind first pass + crux validation) BEFORE Phase 1",
      "inputs": lambda run, proj: [run / "phase0" / "user_query.txt", run / "phase0" / "lit_table.md",
+                                  proj / ".open-scientist" / "paper_fulltext",
                                   *proj_files(proj, "mainline.md", "facts.md", "code_map.md")],
      "outputs": lambda run: [run / "phase0" / "mainline_first.json"],
      "marker": lambda run, proj: run / "phase0" / "mainline_first.json"},
+    {"name": "causal", "skill": "mainline", "kind": "verify",
+     "due": lambda run, step, proj: LBL_PHASE1 in step and not (run / "phase0" / "causal_order.json").exists(),
+     "title": "Open Scientist layer — causal-ordering audit (round 3: isolated Sol, every candidate anchored to the "
+              "baseline paper section AND code file:line) BEFORE Phase 1",
+     "inputs": lambda run, proj: [run / "phase0" / "mainline_first.json", proj / ".open-scientist" / "paper_fulltext",
+                                  *proj_files(proj, "facts.md", "code_map.md")],
+     "outputs": lambda run: [run / "phase0" / "causal_order.json",
+                             run / "phase0" / "mainline_first.json (final rewritten if REORDER / REJECT_MAINLINE)"],
+     "marker": lambda run, proj: run / "phase0" / "causal_order.json"},
     {"name": "gaps", "skill": "soundness-gate", "kind": "verify",
      "due": lambda run, step, proj: before_phase2(run) and not (run / "phase1" / ".gap_filter_done").exists(),
      "title": "Open Scientist layer — soundness gate, GAP level (verifier: code + literature only) BEFORE Phase 2",
@@ -101,6 +130,16 @@ LAYERS = [  # checked in order; the first due layer is emitted. kind: rank | ver
      "outputs": lambda run: [run / "phase1" / "classical" / "recall.json", run / "phase1" / "classical" / "<obj_id>.md + <obj_id>.json",
                              run / "phase1" / "classical_anchors.json"],
      "marker": lambda run, proj: run / "phase1" / "classical_anchors.json"},
+    {"name": "property", "skill": "property-test", "kind": "verify",
+     "due": lambda run, step, proj: DOMAIN == "ml" and before_phase2(run)
+            and not (run / "phase1" / ".property_tests_done").exists(),
+     "title": "Open Scientist layer — quick property check of classical anchors (one script per anchor on this "
+              "project's code, frozen ckpt, no training; clear failure drops the anchor) BEFORE Phase 2",
+     "inputs": lambda run, proj: [run / "phase1" / "classical_anchors.json", run / "phase1" / "classical",
+                                  *proj_files(proj, "code_map.md")],
+     "outputs": lambda run: [run / "phase1" / "property_tests" / "<obj_id>.py", run / "phase1" / "anchor_tests.json",
+                             run / "phase1" / ".property_tests_done (written by scripts/property_check.py --write)"],
+     "marker": lambda run, proj: run / "phase1" / ".property_tests_done"},
     {"name": "early", "skill": "soundness-gate", "kind": "verify",
      "due": lambda run, step, proj: LBL_COLLISION in step and not (run / "soundness_early.json").exists(),
      "title": "Open Scientist layer — soundness gate, MECHANISM level (S1 / S2 / S7 only; a KILL here skips Phase 3) BEFORE collision",
@@ -109,7 +148,7 @@ LAYERS = [  # checked in order; the first due layer is emitted. kind: rank | ver
      "outputs": lambda run: [run / "soundness_early.json"],
      "marker": lambda run, proj: run / "soundness_early.json"},
     {"name": "protocol", "skill": "soundness-gate", "kind": "verify",
-     "due": lambda run, step, proj: LBL_SKELETON in step and not (proj / ".open-scientist" / "protocol_audit.json").exists(),
+     "due": lambda run, step, proj: LBL_SKELETON in step and protocol_stale(proj),
      "title": "Open Scientist layer — soundness gate, PROTOCOL level (the project's evaluation tools; once per project, redo when a tool changes) BEFORE Phase 4",
      "inputs": lambda run, proj: [*proj_files(proj, "code_map.md", "mainline.md")],
      "outputs": lambda run: [Path("<project>/.open-scientist/protocol_audit.json")],
@@ -133,10 +172,10 @@ LAYERS = [  # checked in order; the first due layer is emitted. kind: rank | ver
 
 EXTRA = [  # (condition on the RS step, extra inputs) — layer outputs + overlay prompts the RS sub-agent must also read
     (lambda step: LBL_PHASE1 in step,
-     lambda run: [run / "phase0" / "mainline_first.json", OVER / "phase1.md"]),
+     lambda run: [run / "phase0" / "mainline_first.json", run / "phase0" / "causal_order.json", OVER / "phase1.md"]),
     (lambda step: "llm_subagent" in step and f"STEP   : {LBL_GENERATION}" in step,
      lambda run: [run / "phase0" / "mainline_first.json", run / "phase1" / "soundness_gaps.json",
-                  run / "phase1" / "classical_anchors.json", OVER / "generation.md"]),
+                  run / "phase1" / "classical_anchors.json", run / "phase1" / "anchor_tests.json", OVER / "generation.md"]),
 ]
 
 
