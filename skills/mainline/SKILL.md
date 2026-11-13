@@ -1,6 +1,6 @@
 ---
 name: mainline
-description: Mainline-first problem formulation (Open Scientist 0.9). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses), a crux validation against our claims, and a causal-ordering audit (isolated Sol) that anchors every candidate to the baseline paper's own sections and to code file:line, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
+description: Mainline-first problem formulation (Open Scientist 0.10). Before RS Phase 1, find the ONE constraint that most limits the project goal and organise every other problem as a branch causally tied to it — via a blind first pass (an isolated agent that does not see our own hypotheses), a crux validation against our claims, and a causal-ordering audit (isolated Sol) that anchors every candidate to the baseline paper's own sections and to code file:line, with a counterfactual bottleneck test and a rule that the mainline changes only on new evidence. Use at the Phase 0 → 1 boundary (os_next emits it), when writing the RS query, or when choosing or re-checking the paper's bottlenecks.
 ---
 
 # 主线优先（Problem formulation → bottleneck → causal structure）
@@ -16,6 +16,8 @@ description: Mainline-first problem formulation (Open Scientist 0.9). Before RS 
 ④ 再往上抽象一层时，下一步该做什么不再改变——那一层就是停止点（例："WM 在名义分布外失真" vs "模型误差"：后者不改变我们该做的实验，就停在前者）。
 
 一篇期刊方法论文 = 一条主线 + 最多两条支线（合计三个瓶颈），每个都用简单的方法解决：1–2 个自己的切入，其余集成成熟方法。瓶颈必须是项目里实际撞到、测到的。
+
+**Lite 模式**（`OPEN_SCIENTIST_MODE=lite`）：跳过第 2 轮 Crux（不调设计档）；第 1 轮盲测的输出直接填 `mainline_first.json` 的 `final`（`blind` 同内容），第 3 轮因果排序照做——它是唯一能判上下游、触发 REORDER 的一轮。主线已定且没有新证据时，三轮都不跑，复制已有产物。
 
 ## 三轮（位置：RS Phase 0 结束、Phase 1 开始之前；产物 `phase0/mainline_first.json` + `phase0/causal_order.json`）
 
@@ -76,6 +78,11 @@ prompt 要点（照抄）：
 ```
 REORDER / REJECT_MAINLINE → 按 `order` 改写 `mainline_first.json` 的 `final`，并在 `mainline.md` 变更记录写一行。`first_measurement` 的放弃阈值是预注册的：测出来触发就放弃该主线，不再加解释续命。
 
+**REORDER 必须传到本 run 的 TARGET**（2026-11-11，来自 u2-reward-v2：REORDER 判"平移不变性上游于奖励结构"，TARGET 仍留在奖励侧，后面 7 张卡全在下游打转）：新主线如果在本 run `TARGET:` 的上游，二选一，不许原样进 Phase 1——
+① 改写 `phase0/user_query.txt` 的 `TARGET:` 指向新主线（问题卡重写），再进 Phase 1；
+② 本 run 停止，给新主线开新 run。
+只有当本 run 能写出"上游约束为什么不卡住这个 TARGET"的一句话论证（引 `causal_order.json` 的 edge 和反事实）时，才可以保留原 TARGET，并把这句话写进 `mainline.md` 变更记录。`first_measurement` 若是裁决上下游的检验，先做它（离线优先），再进 Phase 1。
+
 ### 写盘
 `phase0/mainline_first.json`：
 ```json
@@ -106,13 +113,40 @@ RS 一次只出一个 anchor 的卡。主线和每条支线各开一个 RS run�
 - `classical-recall`（解法侧）只给已准入的主线 / 支线找经典原问题并建模，主线先做。
 - `problem-selection` 的"影响"一项，按"是否作用在主线上"打分。
 
+## 结构审计（连续失败时回到问题侧；2026-11-11）
+**为什么有这一节**：u2-reward-v2 在同一 TARGET 上连败 7 张卡（4 KILL + 3 训练 FAIL，含验证器唯一 PASS 卡），三张训练卡同一签名（yaw 改善、XY 不动、body 付出）。失败不是"卡不够好"，而是 TARGET 在一个不可移除约束（actor 观测平移不变）的下游——换多少张卡都一样。卡级验证器只看单张卡，看不到这种跨卡模式，所以要单独一层。
+
+**触发**（`os_next` 机械判定，`STATE: STRUCTURAL_AUDIT`）：同一 run 在 `cards.json` 里 ≥2 张方法卡失败，**来源不限**（RS 卡、成熟方法槽、主会话或用户临时提的卡）。失败 = 验证器 KILL，或训练后 FAIL 且 `attribution` 为 `GAP` / `METHOD`（0.10：训练后 FAIL 先做 `attribution` skill；归因到评测器 / 实现 / 机制没起作用的不计；`role` 为 `baseline` / `upper_bound` 的臂不计）。**只要有一张归因为 `GAP`，一张就触发**——判据在本制度下不可动时，不需要第二张卡来确认。触发后停止抽卡：不起草、不送验证器、不训练新卡。编排者在第 1 张失败后也应主动对照 `causal_order.json`，kill / fail 理由指向 TARGET 上游时不必等第 2 张。
+
+**怎么做**：一个隔离 sub-agent（推理档 `model=sonnet`；不能是生成这些卡的调用）。只给：本 run 的 `phase0/user_query.txt`、`mainline_first.json`、`causal_order.json`、每张失败卡的一句话机制 + `intervention_object` + kill_reasons / 失败签名（RESULT 的行为摘要，不给跑分表）、`facts.md` 的 [实测] 行、代码（只读）。逐项回答：
+1. **共同签名**：失败理由是各自独立（不同 S 项、不同机制缺陷），还是同一个模式（同一前提被反驳、训练结果同向偏移）？列出证据。
+2. **干预位置**：每张卡的 `intervention_object` 作用在 `causal_order` 因果链的哪一环？是否全部在某个约束的下游？那个约束本身有没有任何一张卡碰过？
+3. **约束是否可移除**：该上游约束属于 ① 目标设立错（TARGET 选在下游、或判据本身不可达）；② 当前合同内结构性不可能（例：观测对某变量不变、goal 固定的那个约束），只能放开一个被固定的参数才能动；③ 不是约束，只是这几张卡各自有缺陷。
+4. **反事实**：如果放开该约束（给出最小的放开方式，代码 `file:line`），哪张已失败的卡会变得可行？给一个离线可做的裁决检验和放弃阈值。
+
+写 `<run>/structural_audit.json`：
+```json
+{"decision": "GOAL_MISSET | STRUCTURAL | NOT_STRUCTURAL",
+ "failures_at_audit": 2,
+ "signature": "...", "upstream_constraint": "...", "constraint_owner": "target | contract | none",
+ "release_option": {"what": "...", "code": ["file:line"], "test": "...", "abandon_if": "..."},
+ "summary": "一段话"}
+```
+**判决之后**：
+- `GOAL_MISSET` → 本 run 关闭；回本 skill 第 1–3 轮，以审计为**新证据**重定主线 / TARGET（变更记录写一行），新 run。
+- `STRUCTURAL` → 本 run 关闭；用 `problem-selection` 的问题反转（放开一个固定参数 / 换等值目标 / 反问数据回答了什么）。放开的若是 goal 或项目宪法固定的约束（观测合同、平台、论文类型），**先问用户**，不得自行改目标。
+- `NOT_STRUCTURAL` → 只换来**一张**新卡的额度；再失败就重审（`failures_at_audit` 递增）。
+审计判决同样记进 `verifier_log.md` 一行，事后回测（例如放开约束后的卡是否成立）。
+
 ## 主线什么时候能改
-- 只在**新证据**（新实验结果、离线检查、验证器 KILL 了主线本身）推翻时改；
+- 只在**新证据**（新实验结果、离线检查、验证器 KILL 了主线本身、**结构审计判 GOAL_MISSET / STRUCTURAL**、先验扫描判 `IMMOVABLE`）推翻时改；
+- **测到新现象时回查被搁置的条目**：Phase 1 里标成 unrelated 的 gap、以前弃掉的候选，判断都是在当时的制度下做的。新测到的现象（例：只在长训练后出现的退化）落在哪条被搁置的 gap 上，那条 gap 就重新打开、重新准入；"已弃条目不翻案"只对没有新测量的争论成立。不许只用现有主线去解释新现象；
 - 不因为一轮讨论"听起来更深刻"而改；
 - 改的时候在 `mainline.md` 记一行：旧主线 → 新主线、推翻它的证据。
 
 ## 选题判据（保留）
-1. 在自己的系统上测到现象，有数字。
+0. 社区（官方实现的 issue / README、复现仓的失败记录）写明的问题可以直接作为 TARGET 的来源，不需要从论文文字推导；但进设计之前仍要在本机测到（准入 `measured`）。
+1. 在自己的系统上测到现象，有数字，并记下它出现的制度（训练长度 / checkpoint / 评测条件）。
 2. 到基线论文自己的消融对照上复测，或用别人发布的权重复测（只评测）：对照上也存在 → 领域问题；只在自己的范式里存在 → 本设置特有，适合作"自己的"切入；对照上消失 → 回代码找原因。
 
 ## 项目文件 `<project>/.open-scientist/mainline.md`

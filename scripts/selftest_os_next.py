@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Self-test of os_next.py (Open Scientist 0.9). No arguments, no network.
+"""Self-test of os_next.py (Open Scientist 0.10). No arguments, no network.
 
 1. Label guard: every RS label os_next keys on still exists in the bundled RS source (an upstream rename must
    fail here, not silently skip a layer).
-2. Trigger logic on synthetic run dirs: mainline -> gap gate -> admission -> classical -> pass-through to Phase 2 ->
+2. Trigger logic on synthetic run dirs: mainline -> gap gate -> admission (measured only) -> prior sweep ->
+   classical -> pass-through to Phase 2 ->
    mechanism gate (before collision) -> protocol audit -> card gate -> selection -> pass-through;
-   a KILL at either verifier stop -> terminal; overlays + extra inputs attached.
+   a KILL at either verifier stop -> terminal; overlays + extra inputs attached; prior-sweep stops
+   (SOLVED_BY_SWITCH / IMMOVABLE); failure attribution before the structural audit counts a trained FAIL.
 3. classical_check.py on a synthetic report: complete -> modeled, abstract-only -> lead, missing field -> incomplete.
 """
 
@@ -54,8 +56,31 @@ def main() -> int:
         check("Phase 1 proceed -> gap gate", name(prep_step) == "gaps")
         (run / "phase1" / ".gap_filter_done").write_text("")
         check("gap gate done -> admission", name(prep_step) == "admit")
-        (run / "phase1" / "admission.json").write_text("{}")
-        check("admission done -> classical", name(prep_step) == "classical")
+        (run / "phase1" / "admission.json").write_text(json.dumps({"gaps": [{"id": "G1", "phenomenon": "pending"}]}))
+        check("pending admission blocks design", N.admission_pending(run) == ["G1"]
+              and "ADMISSION_PENDING" in N.emit_pending(run, ["G1"]))
+        (run / "phase1" / "admission.json").write_text(json.dumps({"gaps": [
+            {"id": "G1", "phenomenon": "measured"}, {"id": "G2", "phenomenon": "out_of_scope"}]}))
+        check("measured admission does not block", N.admission_pending(run) == [])
+        adm = run / "phase1" / "admission.json"
+        good = adm.read_text()
+        for bad in ('{"gaps": {"G1": {"phenomenon": "measured"}}}', '{"gaps": ["G1"]}', '{}', '{"gaps": []}',
+                    '{"gaps": [{"id": "G2", "phenomenon": "out_of_scope"}]}'):
+            adm.write_text(bad)
+            check(f"malformed / empty admission blocks: {bad[:28]}", len(N.admission_pending(run)) == 1)
+        adm.write_text(good)
+        check("admission done -> prior sweep", name(prep_step) == "sweep")
+        sweep = run / "phase1" / "prior_sweep.json"
+        for dec in ("SOLVED_BY_SWITCH", "IMMOVABLE"):
+            sweep.write_text(json.dumps({"decision": dec}))
+            check(f"prior sweep {dec} -> terminal", N.sweep_stop(run) == dec and dec in N.emit_sweep_stop(run, dec))
+        sweep.write_text(json.dumps({"decision": "solved_by_switch"}))
+        check("prior sweep decision is case-insensitive", N.sweep_stop(run) == "SOLVED_BY_SWITCH")
+        sweep.write_text(json.dumps({"decision": "looks fine"}))
+        check("unknown sweep decision -> sweep still due", name(prep_step) == "sweep")
+        sweep.write_text(json.dumps({"decision": "RESIDUAL"}))
+        check("prior sweep RESIDUAL -> keep going", N.sweep_stop(run) is None)
+        check("prior sweep done -> classical", name(prep_step) == "classical")
         (run / "phase1" / "classical_anchors.json").write_text("{}")
         check("classical done -> property test (ml)", name(prep_step) == "property")
         N.DOMAIN = "general"
@@ -68,10 +93,12 @@ def main() -> int:
         (run / "phase1" / "classical_anchors.json").unlink()
         check("Phase 2 started -> classical no longer due", name(gen_step) is None)
         (run / "phase1" / "classical_anchors.json").write_text("{}")
-        extra = next((f(run) for c, f in N.EXTRA if c(gen_step)), [])
+        extra = next((f(run, proj) for c, f in N.EXTRA if c(gen_step)), [])
         check("generation gets overlay + gate + anchors", N.OVER / "generation.md" in extra
               and run / "phase1" / "soundness_gaps.json" in extra and run / "phase1" / "classical_anchors.json" in extra)
-        extra1 = next((f(run) for c, f in N.EXTRA if c(p1_step)), [])
+        check("generation gets prior sweep + deploy contract", run / "phase1" / "prior_sweep.json" in extra
+              and proj / ".open-scientist" / "deploy_contract.md" in extra)
+        extra1 = next((f(run, proj) for c, f in N.EXTRA if c(p1_step)), [])
         check("Phase 1 gets overlay + mainline", N.OVER / "phase1.md" in extra1)
         check("collision -> mechanism gate", name(coll_step) == "early")
         (run / "soundness_early.json").write_text(json.dumps({"verdict": "CHECK"}))
@@ -100,8 +127,107 @@ def main() -> int:
         (run / "soundness_early.json").write_text(json.dumps({"verdict": "CHECK"}))
         (run / "soundness_cards.json").write_text(json.dumps({"verdict": "KILL", "kill_reasons": ["x"]}))
         check("card KILL -> terminal", N.killed(run) == run / "soundness_cards.json")
+        reg = proj / ".open-scientist" / "cards.json"
+        reg.write_text(json.dumps({"cards": [{"id": "a", "run": f"ideaspark_run/{run.name}", "verdict": "KILL"}]}))
+        check("1 failure -> no structural audit", N.structural_state(run, proj)[0] is None)
+        reg.write_text(json.dumps({"cards": [
+            {"id": "a", "run": f"ideaspark_run/{run.name}", "verdict": "KILL"},
+            {"id": "b", "run": f"ideaspark_run/{run.name}", "verdict": "PASS 9/12", "outcome": "FAIL"},
+            {"id": "c", "run": "ideaspark_run/other", "verdict": "KILL"}]}))
+        check("trained FAIL without attribution -> attribution due first", N.attribution_due(run, proj) == ["b"]
+              and "ATTRIBUTION_DUE" in N.emit_attribution(run, ["b"]))
+        mk = lambda attr, role="method": reg.write_text(json.dumps({"cards": [
+            {"id": "a", "run": f"ideaspark_run/{run.name}", "verdict": "KILL"},
+            {"id": "b", "run": f"ideaspark_run/{run.name}", "verdict": "PASS 9/12", "outcome": "FAIL",
+             "attribution": attr, "role": role},
+            {"id": "c", "run": "ideaspark_run/other", "verdict": "KILL"}]}))
+        mk("IMPLEMENTATION: wrong ckpt")
+        check("FAIL attributed to implementation is not a failed card",
+              N.attribution_due(run, proj) == [] and N.structural_state(run, proj) == (None, ["a"]))
+        mk("METHOD: premise falsified", role="upper_bound")
+        check("upper-bound / baseline arms never count as failed cards", N.structural_state(run, proj) == (None, ["a"]))
+        mk("METHOD: premise falsified")
+        check("KILL + trained FAIL (METHOD) on this run -> audit due",
+              N.structural_state(run, proj) == ("due", ["a", "b"]))
+        # main()-level ordering, with the RS navigator stubbed out
+        import contextlib, io  # noqa: E401,E402
+
+        def run_main(step: str, mode: str = "full") -> str:
+            real, argv, N.MODE = N.rs_next, sys.argv, mode
+            N.rs_next = lambda r, q: (0, step)
+            sys.argv = ["os_next.py", "--dir", str(run), "--project", str(proj)]
+            buf = io.StringIO()
+            try:
+                with contextlib.redirect_stdout(buf):
+                    N.main()
+            finally:
+                N.rs_next, sys.argv, N.MODE = real, argv, "full"
+            return buf.getvalue()
+
+        mk("")
+        check("main: unattributed FAIL is asked for before the structural audit",
+              "ATTRIBUTION_DUE" in run_main(skel_step) and "STRUCTURAL_AUDIT" not in run_main(skel_step))
+        mk("METHOD: premise falsified")
+        check("main: attributed failures -> structural audit", "STRUCTURAL_AUDIT" in run_main(skel_step))
+        (run / "structural_audit.json").write_text(json.dumps({"decision": "NOT_STRUCTURAL", "failures_at_audit": 2}))
+        reg.write_text(json.dumps({"cards": [
+            {"id": "a", "run": f"ideaspark_run/{run.name}", "verdict": "KILL"},
+            {"id": "b", "run": f"ideaspark_run/{run.name}", "outcome": "FAIL", "attribution": "METHOD: x"},
+            {"id": "d", "run": f"ideaspark_run/{run.name}", "outcome": "FAIL", "attribution": "METHOD: y"}]}))
+        check("NOT_STRUCTURAL then a third failure -> audit again", N.structural_state(run, proj)[0] == "due")
+        (run / "structural_audit.json").unlink()
+        (run / "soundness_cards.json").write_text(json.dumps({"verdict": "CHECK"}))
+        reg.write_text(json.dumps({"cards": []}))
+        sweep.write_text(json.dumps({"decision": "IMMOVABLE"}))
+        check("main: sweep stop ends the run", "PRIOR_SWEEP_STOP (IMMOVABLE)" in run_main(prep_step))
+        check("a line that ends never re-scopes the deliverable", "never re-scope the paper" in run_main(prep_step)
+              and "never re-scope the paper" in N.emit_structural("closed", run, []))
+        sweep.write_text(json.dumps({"decision": "RESIDUAL"}))
+        for f in ("phase2_generate/closest_abstracts.json",):
+            (run / f).unlink()
+        adm.write_text(json.dumps({"gaps": [{"id": "G1", "phenomenon": "pending"}]}))
+        check("main: pending admission stops before design", "ADMISSION_PENDING" in run_main(prep_step, "lite"))
+        adm.write_text(good)
+        (run / "phase2_generate" / "closest_abstracts.json").write_text("{}")
+        audit.unlink()
+        lite_out = run_main(coll_step, "lite")
+        check("main: lite exit names the card gate and warns about a stale evaluator audit",
+              "LITE_CANDIDATE_READY" in lite_out and "EVALUATOR" in lite_out and "UPPER_BOUND" in lite_out)
+        check("main: lite exit asks for two different arms on the same line", "TWO ARMS, ONE LINE" in lite_out
+              and "sibling_candidate.json" in lite_out and "Never a second seed" in lite_out)
+        check("generation receives the sibling candidate", run / "phase0" / "sibling_candidate.json"
+              in next((f(run, proj) for c, f in N.EXTRA if c(gen_step)), []))
+        # per-TARGET counting and gate kills
+        (run / "soundness_cards.json").write_text(json.dumps({"verdict": "KILL", "kill_reasons": ["x"]}))
+        check("unregistered card-gate KILL counts once", N.run_failures(run, proj) == ["card-gate"])
+        reg.write_text(json.dumps({"cards": [{"id": "k", "run": f"ideaspark_run/{run.name}", "verdict": "KILL"}]}))
+        check("registered gate KILL is not counted twice", N.run_failures(run, proj) == ["k"])
+        (run / "soundness_cards.json").write_text(json.dumps({"verdict": "CHECK"}))
+        (run / "phase0" / "same_target_runs.txt").write_text("ideaspark_run/prev_run\n")
+        reg.write_text(json.dumps({"cards": [{"id": "k", "run": f"ideaspark_run/{run.name}", "verdict": "KILL"},
+                                             {"id": "p", "run": "ideaspark_run/prev_run", "verdict": "KILL"}]}))
+        check("failures carry over from earlier runs on the same TARGET",
+              N.structural_state(run, proj) == ("due", ["k", "p"]))
+        (run / "phase0" / "same_target_runs.txt").unlink()
+        reg.write_text(json.dumps({"cards": [{"id": "g", "run": f"ideaspark_run/{run.name}", "verdict": "CHECK",
+                                              "outcome": "FAIL", "attribution": "GAP: criterion immovable"}]}))
+        check("one FAIL attributed to the gap -> audit due at once", N.structural_state(run, proj) == ("due", ["g"]))
+        mk("METHOD: premise falsified")
+        (run / "structural_audit.json").write_text(json.dumps({"decision": "NOT_STRUCTURAL", "failures_at_audit": 2}))
+        check("NOT_STRUCTURAL buys one more card", N.structural_state(run, proj)[0] is None)
+        (run / "structural_audit.json").write_text(json.dumps({"decision": "STRUCTURAL", "failures_at_audit": 2}))
+        check("STRUCTURAL closes the run", N.structural_state(run, proj)[0] == "closed"
+              and "RUN_CLOSED" in N.emit_structural("closed", run, []))
+        N.MODE = "lite"
+        check("lite exits at first collision", N.lite_exit(f"STEP   : {N.LBL_COLLISION}"))
+        check("lite does not exit at Phase 1", not N.lite_exit(f"STEP   : {N.LBL_PHASE1}"))
+        N.MODE = "full"
+        check("full mode never lite-exits", not N.lite_exit(f"STEP   : {N.LBL_COLLISION}"))
+        reg.write_text(json.dumps({"cards": []}))
+        (run / "structural_audit.json").unlink()
         for L in N.LAYERS:
-            check(f"layer {L['name']} has a kind", L.get("kind") in ("rank", "verify", "model"))
+            check(f"layer {L['name']} has a kind", L.get("kind") in ("rank", "verify", "model", "measure"))
+        check("lite keeps the prior sweep", "sweep" not in N.LITE_SKIP)
 
         import property_check as P  # noqa: E402
         (run / "phase1" / "anchor_tests.json").write_text(json.dumps({"tests": [

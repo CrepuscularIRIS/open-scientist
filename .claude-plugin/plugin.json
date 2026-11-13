@@ -1,7 +1,7 @@
 {
   "name": "open-scientist",
-  "version": "0.9.0",
-  "description": "General-purpose research plugin for any field. ResearchStudio idea_spark (synced to upstream #63) as the generator, with layers of three declared kinds inserted at phase boundaries: rank (mainline-first problem formulation; problem-selection over a cross-run card registry), verify (an independent soundness verifier on code + literature only — never the project's own scores — at gap, mechanism and card level, plus phenomenon admission and a protocol audit), and the solution-side core: classical-theory recall and modeling (original problem → construction → preserved property → mapping) whose construction RS Phase 2 transports. Domain switch OPEN_SCIENTIST_DOMAIN=ml|general (general = arXiv + OpenReview).",
+  "version": "0.10.0",
+  "description": "General-purpose research plugin for any field. 0.10: measure the phenomenon first, run the existing official / community switches and one upper-bound arm before designing anything (prior sweep), design only on the residual gap, pre-review every card against a deployment contract, and attribute every trained failure (evaluator / implementation / not engaged / gap / method) before backtracking. ResearchStudio idea_spark (synced to upstream #63) as the generator, with layers of three declared kinds inserted at phase boundaries: rank (mainline-first problem formulation; problem-selection over a cross-run card registry), verify (an independent soundness verifier on code + literature only — never the project's own scores — at gap, mechanism and card level, plus phenomenon admission and a protocol audit), and the solution-side core: classical-theory recall and modeling (original problem → construction → preserved property → mapping) whose construction RS Phase 2 transports. Domain switch OPEN_SCIENTIST_DOMAIN=ml|general (general = arXiv + OpenReview).",
   "author": {
     "name": "CrepuscularIRIS"
   },
